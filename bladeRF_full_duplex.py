@@ -26,11 +26,33 @@ bandwidth = 28000000
 def datarate_test_tx(cen_freq):
   print 'Transmitting on: ' + str(cen_freq)
 
+  #broadcast device id as well as best frequencies
+
+  #wait for an expected device to connect and broadcast
+
+  #propose a frequency change to one of the best current freqs
+
+  #receive acknowledge before changing frequency
+
+  #receive acknowledgement of connection on new frequency
+
 '''[datarate_test_rx]----------------------------------------------------------
   Attempt to receive data and measure datarate
 ----------------------------------------------------------------------------'''
 def datarate_test_rx(cen_freq, bw):
   print 'Receiving on: ' + str(cen_freq)
+
+  #broadcast device id as well as best frequencies
+
+  #wait for proposal
+
+  #accept if reasonable, otherwise reset process
+
+  #broadcast acknowledgement of frequency change
+
+  #change frequency
+
+  #broadcast acknowledgement of connection on new frequency
 
 
 '''[Actual script]----------------------------------------------------------'''

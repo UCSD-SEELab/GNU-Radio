@@ -59,7 +59,7 @@ class bladeRF_fft(gr.top_block):
         )
         self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_float*fft_size, 1)
         self.blocks_head_0 = blocks.head(gr.sizeof_float*fft_size, 64)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*fft_size, 'C:/Projects/SeeLabDrones/workspace/log_power_fft_data.bin', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*fft_size, './log_power_fft_data.bin', False)
         self.blocks_file_sink_0.set_unbuffered(False)
 
         ##################################################
