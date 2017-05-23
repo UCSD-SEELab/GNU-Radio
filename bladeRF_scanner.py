@@ -36,7 +36,17 @@ fft_filename = 'log_power_fft_data.bin'
   return     - vector containing peaks of the data
 ----------------------------------------------------------------------------'''
 def detect_peaks(cen_freq, bw, max_peaks, fft_size, filename):
-  f = scipy.fromfile(open(filename), dtype=scipy.float32)
+  
+  #f = scipy.fromfile(open(filename), dtype=scipy.float32)
+  
+  f = []
+  with open(filename, 'rb') as file:
+    flt = file.read(4)
+    while flt:
+      f.append(struct.unpack('f', flt)[0])
+      flt = file.read(4)
+      #f.append(struct.unpack('f' * (len(line) / 4), line)[0])
+
   print len(f)
 
   peak_counts = []
