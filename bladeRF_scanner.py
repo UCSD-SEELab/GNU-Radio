@@ -190,11 +190,14 @@ def select_usable_by_section(cen_freq, bw, section_bw, max_usable, fft_size, fil
     
   return usable_freqs
 
+def main():
+  #gather samples
+  bladeRF_fft.main()
+
+  #select the best frequency by noise over time
+  return select_usable_by_section(center_freq, bandwidth, section_bw, max_usable, fft_size, fft_filename)
 
 '''[Actual script]----------------------------------------------------------'''
-
-#gather samples
-bladeRF_fft.main()
-
-#select the best frequency by noise over time
-select_usable_by_section(center_freq, bandwidth, section_bw, max_usable, fft_size, fft_filename)
+if __name__ == '__main__':
+  main()
+  
