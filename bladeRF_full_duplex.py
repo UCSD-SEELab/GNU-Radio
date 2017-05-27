@@ -13,10 +13,10 @@ import bladeRF_scanner
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-datarate_test_tx = True
-scan_best_freqs  = True
-center_freq = 430500000
-bandwidth   = 28000000
+datarate_test_tx = False
+scan_best_freqs  = False
+center_freq = 912000000
+bandwidth   = 1500000
 
 #transmit variables
 out_file = '_send.bin'
@@ -147,7 +147,7 @@ if scan_best_freqs:
   #take lowest interference frequency and set it to center_freq for now
   center_freq = best_freqs[0]
 
-if(datarate_test_tx)
+if(datarate_test_tx):
   bladeRF_tx(center_freq)
-else
+else:
   bladeRF_rx(center_freq, bandwidth)
