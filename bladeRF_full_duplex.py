@@ -9,14 +9,15 @@ import tx_2400_r2
 import rx_2400_r2
 import struct
 import bladeRF_scanner
+import blade_rx
 
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
 datarate_test_tx = True
-scan_best_freqs  = True
-center_freq = 430500000
-bandwidth   = 28000000
+scan_best_freqs  = False
+center_freq = 912000000
+bandwidth   = 1500000
 
 #transmit variables
 out_file = '_send.bin'
@@ -79,8 +80,8 @@ def write_message(file, message, pre_header, post_header):
     f.write(struct.pack('B', checksum))
     #ba = bytearray(pre_header)
     f.write(pre_header)
-    #ba = bytearray(message)
-    f.write(message)
+    ba = bytearray(message)
+    f.write(ba)
     #ba = bytearray(post_header)
     f.write(post_header)
 
@@ -141,13 +142,17 @@ def extract_by_headers(headers, message):
 
 '''[Actual script]----------------------------------------------------------'''
 
+sdr = blade_rx.blade_rf_sdr(1)
+#sdr.set_bandwidth('all', 28)
+sdr.set_center_freq('all', center_freq / 1000000)
+
 if scan_best_freqs:
   best_freqs = bladeRF_scanner.main()
 
   #take lowest interference frequency and set it to center_freq for now
   center_freq = best_freqs[0]
 
-if(datarate_test_tx)
+if(datarate_test_tx):
   bladeRF_tx(center_freq)
-else
+else:
   bladeRF_rx(center_freq, bandwidth)
