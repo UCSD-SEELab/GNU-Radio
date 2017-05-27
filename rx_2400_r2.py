@@ -90,7 +90,7 @@ class rx_2400_r2(gr.top_block):
         self.fir_filter_xxx_0.declare_sample_delay(0)
         self.digital_pfb_clock_sync_xxx_0 = digital.pfb_clock_sync_fff(sps, 2*3.14159265/100, (firdes.low_pass(1.0, baud_rate*sps, baud_rate, 0.25*baud_rate)), 32, 16, 1.5, 1)
         self.digital_binary_slicer_fb_0 = digital.binary_slicer_fb()
-        self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, "C:/Projects/SeeLabDrones/seelab_drones/data/_out.bin", False)
+        self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, "_out.bin", False)
         self.blocks_file_sink_0_0.set_unbuffered(True)
         self.blocks_add_const_vxx_0 = blocks.add_const_vff((0, ))
         self.analog_quadrature_demod_cf_0 = analog.quadrature_demod_cf(quad_gain)
