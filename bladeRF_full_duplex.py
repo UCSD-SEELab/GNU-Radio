@@ -96,6 +96,8 @@ class gr_thread(threading.Thread):
       else:
         time.sleep(5)
 
+      self.file_busy = False
+
       if rx_process:
         print '[gr_thread] File filled.'
         rx_m_p.file_ready_callback()
@@ -209,6 +211,9 @@ class rx_processor(threading.Thread):
       if self.file_busy:
         self.rx_spin()
         self.gr_thread.file_ready_callback()
+
+        #for i in range(0, len(self.message), 8):
+        #  print read_byte(self.message, i)
         extracted = self.extract_by_headers(self.pre_h, self.post_h, self.message)
         
         print '[rx_processor] Stream processed.'
