@@ -2,7 +2,9 @@
                                                           Author: Jason Ma
                                                           Date  : May 22 2017
     File Name  : bladeRF_full_duplex.py
-    Description: Communication protocols for bladeRF to bladeRF communications
+    Description: Communication protocols for bladeRF to bladeRF communications.
+                 A good portion of this was inspired by and uses Stephen 
+                 Wayne's FSK communication protocols.
 ---*-----------------------------------------------------------------------*'''
 
 import tx_2400_r2
@@ -11,14 +13,16 @@ import struct
 import bladeRF_scanner
 import blade_rx
 import sys
+import threading
+import time
 
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-datarate_test_tx = False
+tx = False
+rx = True
 scan_best_freqs  = False
 
-debug_old_rx = True
 center_freq = 433000000
 bandwidth   = 1500000
 
@@ -27,7 +31,114 @@ out_file = '_send.bin'
 
 #receive variables
 in_file  = '_out.bin'
+rx_new = True
+rx_process = True
 
+class rx_processor(threading.Thread):
+
+  def __init__(self, pre_headers = [], post_headers = []):
+    super(rx_processor, self).__init__()
+    self.pre_h = pre_headers
+    self.post_h = post_headers
+    self.message = []
+    self.file_busy = False
+    self.daemon = True
+    self.start()
+
+  def update_headers(self, pre_headers, post_headers):
+    pre_h = pre_headers
+    post_h = post_headers
+
+  def file_ready_callback(self):
+    self.file_busy = True
+    print '[rx_processor] File ready.'
+
+  def rx_spin(self):
+    with open(in_file, 'rb') as f:
+      
+      stuff = f.read(1)
+      
+      l = []
+      while stuff != "":
+        l.append(struct.unpack('B', stuff)[0])
+        stuff = f.read(1)
+
+      self.message = l
+      #TODO do something with this
+    self.file_busy = False
+    print '[rx_processor] File read complete.'
+
+  def extract_by_headers(self, pre_headers, post_headers, message):
+    l = []
+
+    print '[rx_processor] Processing stream'
+    
+    #look for headers in message
+    for pre_header, post_header in zip(pre_headers, post_headers):
+      print 'Looking for:', pre_header, post_header
+      
+      start_i = 0
+      end_i = 0
+      for i in range(0, len(message) - 8 * len(pre_header)):
+        n = ''
+        for j in range(len(pre_header)):
+          #bin_num = int(''.join(str(x) for x in message[i+j*8:i+(j+1)*8]), 2)
+          #n += chr(bin_num)
+          n += read_byte(message, i + j * 8, 'c')
+
+        if n == pre_header: #found start header
+          start_i = i + len(pre_header) * 8
+          print '-----[TRANSMISSION START FOUND]-[' + pre_header + ']-[' + str(i) + ']'
+
+        if n == post_header: #found end header
+          end_i = i
+
+          #read in 8-bit checksum
+          #checksum = int(''.join(str(x) for x in message[start_i:start_i+8]), 2)
+          checksum = read_byte(message, start_i)
+
+          #account for checksum
+          start_i += 8
+
+          #extract chars from rest of message between headers
+          n = ''
+          for curr_i in range(start_i, end_i, 8):
+            n += read_byte(message, curr_i, 'c')
+          
+          print n
+
+          print '-----[TRANSMISSION END FOUND  ]-[' + post_header + ']-[' + str(i) + ']'
+          
+          
+          #verify checksum
+          actual_checksum = 0
+          for byte in n:
+            actual_checksum += ord(byte)
+
+          actual_checksum = actual_checksum % 256
+          print 'Message_Checksum: ' + str(checksum)
+          print 'Actual_checksum:  ' + str(actual_checksum)
+          if checksum == actual_checksum:
+            print 'Checksum valid'
+            l.append(n)
+          else:
+            print 'Checksum invalid'
+          print ''
+
+    return l
+
+  def run(self):
+    print '[rx_processor] Thread running'
+    while True:
+      if self.file_busy:
+        self.rx_spin()
+        extracted = self.extract_by_headers(self.pre_h, self.post_h, self.message)
+        
+        print '[rx_processor] Stream processed.'
+      #else:
+      #print '[rx_processor] File not ready yet.'
+
+      
 '''[init_comms]----------------------------------------------------------------
   Attempts to initialize communications with a drone using a certain id.
 ----------------------------------------------------------------------------'''
@@ -97,15 +208,29 @@ def write_message(file, message, pre_header, post_header):
 def bladeRF_rx(cen_freq, bw):
   print 'Receiving on: ' + str(cen_freq)
 
-  pre_header = 'SL1'
-  post_header = 'ED1'
+  pre_headers = ['SL1']
+  post_headers = ['ED1']
+
+  rx_m_p = rx_processor(pre_headers, post_headers)
+
+  while True:
+    if rx_new:
+      rx_2400_r2.main()
+    else:
+      time.sleep(1)
+
+    if rx_process:
+      rx_m_p.file_ready_callback()
+      #time.sleep(1)
 
   #while(1):
+  '''
   if not debug_old_rx:
     rx_2400_r2.main()
 
   stream = rx_spin()
-  extract_by_headers(['SL1'], ['ED1'], stream)
+  extract_by_headers(pre_headers, post_headers, stream)
+  '''
 
   #receive messages, print out data rate
 
@@ -121,6 +246,7 @@ def bladeRF_rx(cen_freq, bw):
 
   #broadcast acknowledgement of connection on new frequency
 
+'''
 def rx_spin():
   with open(in_file, 'rb') as f:
     
@@ -132,7 +258,9 @@ def rx_spin():
       l.append(struct.unpack('B', stuff)[0])
       stuff = f.read(1)
     return l
+'''
 
+'''
 def extract_by_headers(pre_headers, post_headers, message):
   l = []
   
@@ -143,30 +271,61 @@ def extract_by_headers(pre_headers, post_headers, message):
     for i in range(0, len(message) - 8 * len(pre_header)):
       n = ''
       for j in range(len(pre_header)):
-        bin_num = int(''.join(str(x) for x in message[i+j*8:i+(j+1)*8]), 2)
-        n += chr(bin_num)
+        #bin_num = int(''.join(str(x) for x in message[i+j*8:i+(j+1)*8]), 2)
+        #n += chr(bin_num)
+        n += read_byte(message, i + j * 8, 'c')
 
       if n == pre_header: #found start header
-        start_i = i
+        start_i = i + len(pre_header) * 8
         print '-----[TRANSMISSION START FOUND]-[' + pre_header + ']-[' + str(i) + ']'
 
       if n == post_header: #found end header
         end_i = i
+
+        #read in 8-bit checksum
+        #checksum = int(''.join(str(x) for x in message[start_i:start_i+8]), 2)
+        checksum = read_byte(message, start_i)
+        print 'Checksum: ' + str(checksum)
+
+        #account for checksum
+        start_i += 8
+
+        #extract chars from rest of message between headers
         n = ''
         for curr_i in range(start_i, end_i, 8):
-          bin_num = int(''.join(str(x) for x in message[curr_i:curr_i+8]), 2)
-          print chr(bin_num),
-          n += chr(bin_num)
+          n += read_byte(message, curr_i, 'c')
         
+        #print n
+
         print '\n-----[TRANSMISSION END FOUND  ]-[' + post_header + ']-[' + str(i) + ']'
-        print ''
-        sys.stdout.flush()
+        
         
         #verify checksum
-        
-        if checksum_valid:
+        actual_checksum = 0
+        for byte in n:
+          actual_checksum += ord(byte)
+
+        actual_checksum = actual_checksum % 256
+
+        if checksum == actual_checksum:
+          print 'Checksum valid'
           l.append(n)
+        else:
+          print 'Checksum invalid'
+        print ''
+        sys.stdout.flush()
+
   return l
+'''
+def read_byte(stream, start_ind, type='i'):
+  value = int(''.join(str(x) for x in stream[start_ind:start_ind+8]), 2)
+
+  if type == 'i':
+    return value
+
+  if type == 'c':
+    return chr(value)
+
 
 '''[Actual script]----------------------------------------------------------'''
 
@@ -180,7 +339,8 @@ if scan_best_freqs:
   #take lowest interference frequency and set it to center_freq for now
   center_freq = best_freqs[0]
 
-if(datarate_test_tx):
+if(tx):
   bladeRF_tx(center_freq)
-else:
+
+if(rx):
   bladeRF_rx(center_freq, bandwidth)
