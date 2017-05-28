@@ -16,7 +16,7 @@ Config variables
 ----------------------------------------------------------------------------'''
 datarate_test_tx = True
 scan_best_freqs  = False
-center_freq = 912000000
+center_freq = 433000000
 bandwidth   = 1500000
 
 #transmit variables
@@ -134,6 +134,7 @@ def extract_by_headers(headers, message):
   
   #look for headers in message
   for header in headers:
+
     print(header)
 
     #TODO if header found and end header found, l.append extracted message
