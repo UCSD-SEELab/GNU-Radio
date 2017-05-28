@@ -19,8 +19,8 @@ import time
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-tx = False
-rx = True
+tx = True
+rx = False
 scan_best_freqs  = False
 
 center_freq = 433000000
@@ -62,7 +62,7 @@ class gr_thread(threading.Thread):
     #message = [x for x in range(255)]
     message = []
     for i in range(1):
-      for j in range(255):
+      for j in range(ord('A'), ord('z') + 1):
         message.append(j)
     pre_header = 'SL1'
     post_header = 'ED1'
@@ -71,12 +71,12 @@ class gr_thread(threading.Thread):
       pre_header = 'SL1'
       post_header = 'ED1'
       write_message(out_file, message, pre_header, post_header)
-      tx_2400_r2.main(out_file, freq = self.cen_freq)
+      tx_2400_r2.main(out_file)
 
       pre_header = 'SL2'
       post_header = 'ED2'
       write_message(out_file, message, pre_header, post_header)
-      tx_2400_r2.main(out_file, freq = self.cen_freq)
+      tx_2400_r2.main(out_file)
 
   def rx(self):
     print 'Receiving on: ' + str(self.cen_freq)
@@ -92,7 +92,7 @@ class gr_thread(threading.Thread):
         time.sleep(0.1)
 
       if rx_new:
-        rx_2400_r2.main(freq = self.cen_freq)
+        rx_2400_r2.main()
       else:
         time.sleep(5)
 
