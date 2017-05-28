@@ -139,7 +139,6 @@ def extract_by_headers(headers, message):
   #look for headers in message
   
   for header in headers:
-    #print(header)
     #i = 0
     #while i + 8 < len(message):
     #print len(header)
@@ -200,7 +199,6 @@ def extract_by_headers(headers, message):
     #string_blocks = (bitstring[i:i+8] for i in range(0, len(bitstring), 8))
     #string = ''.join(chr(int(char, 2)) for char in string_blocks)
       
-
     #TODO if header found and end header found, l.append extracted message
   
 
