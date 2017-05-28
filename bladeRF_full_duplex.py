@@ -14,9 +14,9 @@ import blade_rx
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-datarate_test_tx = True
+datarate_test_tx = False
 scan_best_freqs  = False
-center_freq = 912000000
+center_freq = 433000000
 bandwidth   = 1500000
 
 #transmit variables
@@ -97,10 +97,10 @@ def bladeRF_rx(cen_freq, bw):
   post_header = 'ED1'
 
   #while(1):
-  rx_2400_r2.main()
-  #stream = rx_spin()
+  #rx_2400_r2.main()
 
-  #extract_by_headers(headers, stream)
+  stream = rx_spin()
+  extract_by_headers(['SL1'], stream)
 
   #receive messages, print out data rate
 
@@ -118,25 +118,91 @@ def bladeRF_rx(cen_freq, bw):
 
 def rx_spin():
   with open(in_file, 'rb') as f:
+    
+    
     stuff = f.read(1)
+    
+    l = []
     while stuff != "":
-      #print(stuff)
-      l = []
-
-      #TODO make this part more robust, hasn't caused errors but looks bad
-      for i in range(8):
-        l.append(struct.unpack('B', stuff)[0])
-        stuff = f.read(1)
-      print(l)
+      l.append(struct.unpack('B', stuff)[0])
+      stuff = f.read(1)
+    return l
 
 def extract_by_headers(headers, message):
   l = []
   
+  #for i in range(0, len(message)):
+    #print(message[i:i+8*len(header)])
+    #print i
+    
+
   #look for headers in message
+  
   for header in headers:
-    print(header)
+    #print(header)
+    #i = 0
+    #while i + 8 < len(message):
+    #print len(header)
+    start_i = 0
+    end_i = 0
+    for i in range(0, len(message) - 8 * len(header)):
+      #message[j:j+8*len(header)]
+      n = ''
+      for j in range(len(header)):
+        #print i+j*8, i+(j+1)*8
+        bin_num = int(''.join(str(x) for x in message[i+j*8:i+(j+1)*8]), 2)
+        #print bin_num
+        n += chr(bin_num)
+        #print chr(bin_num)
+      #n = "".join(map(str,message[j:j+8*len(header)]))
+
+      if n == 'SL1': #found start header
+        start_i = i
+        print '-----[TRANSMISSION START FOUND]-[' + header + ']-[' + str(i) + ']'
+
+      if n == 'ED1': #found end header
+        end_i = i
+        n = ''
+        for curr_i in range(start_i, end_i, 8):
+          bin_num = int(''.join(str(x) for x in message[curr_i:curr_i+8]), 2)
+          print chr(bin_num),
+          n += chr(bin_num)
+        
+        print '\n-----[TRANSMISSION END FOUND  ]-[ED1]-[' + str(i) + ']'
+        print ''        
+        
+        #verify checksum
+
+        '''
+        #curr_j = j
+        print 'TRANSMISSION START FOUND---------'
+        j = 0
+        end_not_found = True
+        n = ''
+        while i + len(header) * 8 + len(header) * 8 < len(message) and end_not_found:
+          #print i, j
+          bin_num = int(''.join(str(x) for x in message[i+j*8:i+(j+1)*8]), 2)
+          print chr(bin_num),
+          n += chr(bin_num)
+          if n[-1 * len(header):] == 'ED1':
+            print n
+            print 'TRANSMISSION END FOUND-----------'
+            end_not_found = False
+          j += 1
+        '''
+
+
+      #n = "".join(chr(int("".join(map(str,message[j:j+8*len(header)])),2)) for j in range(len(header)))
+      #n = struct.pack('i', message[i:i+8])
+      #print n
+  
+
+    #string_blocks = (bitstring[i:i+8] for i in range(0, len(bitstring), 8))
+    #string = ''.join(chr(int(char, 2)) for char in string_blocks)
+      
 
     #TODO if header found and end header found, l.append extracted message
+  
 
   return l
 

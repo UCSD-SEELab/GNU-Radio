@@ -60,7 +60,7 @@ class rx_2400_r2(gr.top_block):
         # Variables
         ##################################################
         self.sps = sps = 10
-        self.baud_rate = baud_rate = 7500
+        self.baud_rate = baud_rate = 2500
         self.samp_rate_tx = samp_rate_tx = 400000
         self.samp_rate = samp_rate = int(baud_rate * sps)
         self.rx_vga_gain = rx_vga_gain = 35
