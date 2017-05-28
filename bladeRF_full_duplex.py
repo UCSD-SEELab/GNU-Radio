@@ -15,7 +15,7 @@ import sys
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-datarate_test_tx = False
+datarate_test_tx = True
 scan_best_freqs  = False
 
 debug_old_rx = True
@@ -45,9 +45,16 @@ def bladeRF_tx(cen_freq):
   message = [x for x in range(255)]
   pre_header = 'SL1'
   post_header = 'ED1'
-  write_message(out_file, message, pre_header, post_header)
 
   while(1):
+    pre_header = 'SL1'
+    post_header = 'ED1'
+    write_message(out_file, message, pre_header, post_header)
+    tx_2400_r2.main(out_file)
+
+    pre_header = 'SL2'
+    post_header = 'ED2'
+    write_message(out_file, message, pre_header, post_header)
     tx_2400_r2.main(out_file)
 
   #transmit bytes over and over
