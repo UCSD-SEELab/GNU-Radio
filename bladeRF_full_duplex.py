@@ -34,14 +34,88 @@ in_file  = '_out.bin'
 rx_new = True
 rx_process = True
 
+class gr_thread(threading.Thread):
+  def __init__(self, cen_freq=center_freq, baud_rate=5000):
+    super(gr_thread, self).__init__()
+    self.cen_freq = cen_freq
+    self.file_busy = True
+    self.daemon = True
+    self.baud_rate = baud_rate
+    self.start()
+    '''
+    if tx:
+      self.gr_tx = tx_2400_r2.tx_2400_r2()
+      self.gr_tx.set_baud_rate(self.baud_rate)
+    elif rx:
+      self.gr_rx = rx_2400_r2.rx_2400_r2()
+      self.gr_rx.set_baud_rate(self.baud_rate)
+    '''
+  
+  def file_ready_callback(self):
+    self.file_busy = True
+    print '[gr_thread] File ready callback received.'
+
+  def tx(self):
+    print 'Transmitting on: ' + str(self.cen_freq)
+
+    #write message to send
+    #message = [x for x in range(255)]
+    message = []
+    for i in range(1):
+      for j in range(255):
+        message.append(j)
+    pre_header = 'SL1'
+    post_header = 'ED1'
+
+    while True:
+      pre_header = 'SL1'
+      post_header = 'ED1'
+      write_message(out_file, message, pre_header, post_header)
+      tx_2400_r2.main(out_file, freq = self.cen_freq)
+
+      pre_header = 'SL2'
+      post_header = 'ED2'
+      write_message(out_file, message, pre_header, post_header)
+      tx_2400_r2.main(out_file, freq = self.cen_freq)
+
+  def rx(self):
+    print 'Receiving on: ' + str(self.cen_freq)
+
+    pre_headers = ['SL1', 'SL2']
+    post_headers = ['ED1', 'ED2']
+
+    rx_m_p = rx_processor(self, pre_headers, post_headers)
+
+    while True:
+      #wait for file ready
+      while not self.file_busy:
+        time.sleep(0.1)
+
+      if rx_new:
+        rx_2400_r2.main(freq = self.cen_freq)
+      else:
+        time.sleep(5)
+
+      if rx_process:
+        print '[gr_thread] File filled.'
+        rx_m_p.file_ready_callback()
+
+  def run(self):
+    if tx:
+      self.tx()
+    elif rx:
+      self.rx()
+    
+
 class rx_processor(threading.Thread):
 
-  def __init__(self, pre_headers = [], post_headers = []):
+  def __init__(self, gr_thread, pre_headers = [], post_headers = []):
     super(rx_processor, self).__init__()
     self.pre_h = pre_headers
     self.post_h = post_headers
     self.message = []
     self.file_busy = False
+    self.gr_thread = gr_thread
     self.daemon = True
     self.start()
 
@@ -51,7 +125,7 @@ class rx_processor(threading.Thread):
 
   def file_ready_callback(self):
     self.file_busy = True
-    print '[rx_processor] File ready.'
+    print '[rx_processor] File ready callback received.'
 
   def rx_spin(self):
     with open(in_file, 'rb') as f:
@@ -64,6 +138,8 @@ class rx_processor(threading.Thread):
         stuff = f.read(1)
 
       self.message = l
+
+      print '[rx_processor] Bitstream Length: ' + str(len(l))
       #TODO do something with this
     self.file_busy = False
     print '[rx_processor] File read complete.'
@@ -132,6 +208,7 @@ class rx_processor(threading.Thread):
     while True:
       if self.file_busy:
         self.rx_spin()
+        self.gr_thread.file_ready_callback()
         extracted = self.extract_by_headers(self.pre_h, self.post_h, self.message)
         
         print '[rx_processor] Stream processed.'
@@ -165,12 +242,12 @@ def bladeRF_tx(cen_freq):
     pre_header = 'SL1'
     post_header = 'ED1'
     write_message(out_file, message, pre_header, post_header)
-    tx_2400_r2.main(out_file)
+    tx_2400_r2.main(out_file, center_freq = center_freq)
 
     pre_header = 'SL2'
     post_header = 'ED2'
     write_message(out_file, message, pre_header, post_header)
-    tx_2400_r2.main(out_file)
+    tx_2400_r2.main(out_file, center_freq = center_freq)
 
   #transmit bytes over and over
 
@@ -226,7 +303,7 @@ def bladeRF_rx(cen_freq, bw):
 
   while True:
     if rx_new:
-      rx_2400_r2.main()
+      rx_2400_r2.main(center_freq = center_freq)
     else:
       time.sleep(1)
 
@@ -349,9 +426,13 @@ if scan_best_freqs:
 
   #take lowest interference frequency and set it to center_freq for now
   center_freq = best_freqs[0]
-
+'''
 if(tx):
   bladeRF_tx(center_freq)
 
 if(rx):
   bladeRF_rx(center_freq, bandwidth)
+'''
+
+gr = gr_thread()
+gr.join()
