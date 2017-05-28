@@ -71,12 +71,12 @@ class gr_thread(threading.Thread):
       pre_header = 'SL1'
       post_header = 'ED1'
       write_message(out_file, message, pre_header, post_header)
-      tx_2400_r2.main(out_file, freq = self.cen_freq)
+      tx_2400_r2.main(out_file, self.cen_freq)
 
       pre_header = 'SL2'
       post_header = 'ED2'
       write_message(out_file, message, pre_header, post_header)
-      tx_2400_r2.main(out_file, freq = self.cen_freq)
+      tx_2400_r2.main(out_file, self.cen_freq)
 
   def rx(self):
     print 'Receiving on: ' + str(self.cen_freq)
@@ -92,9 +92,11 @@ class gr_thread(threading.Thread):
         time.sleep(0.1)
 
       if rx_new:
-        rx_2400_r2.main(freq = self.cen_freq)
+        rx_2400_r2.main()
       else:
         time.sleep(5)
+
+      self.file_busy = False
 
       if rx_process:
         print '[gr_thread] File filled.'
@@ -209,6 +211,9 @@ class rx_processor(threading.Thread):
       if self.file_busy:
         self.rx_spin()
         self.gr_thread.file_ready_callback()
+
+        #for i in range(0, len(self.message), 8):
+        #  print read_byte(self.message, i)
         extracted = self.extract_by_headers(self.pre_h, self.post_h, self.message)
         
         print '[rx_processor] Stream processed.'
