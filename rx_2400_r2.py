@@ -60,7 +60,7 @@ class rx_2400_r2(gr.top_block):
         # Variables
         ##################################################
         self.sps = sps = 10
-        self.baud_rate = baud_rate = 2500
+        self.baud_rate = baud_rate = 5000
         self.samp_rate_tx = samp_rate_tx = 400000
         self.samp_rate = samp_rate = int(baud_rate * sps)
         self.rx_vga_gain = rx_vga_gain = 35
@@ -191,11 +191,12 @@ def main(top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
     if freq is not None:
         options.center_freq = freq
     tb = top_block_cls(center_freq=options.center_freq)
+    print '[rx_2400] RX BEGIN'
     tb.start()
     start_time = time.time()
     
     while (time.time() - start_time < rx_time):
-        time.sleep(0.5)
+        time.sleep(0.1)
         #print(rx)
     '''
     try:
@@ -204,6 +205,7 @@ def main(top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
         pass'''
     tb.stop()
     tb.wait()
+    print '[rx_2400] RX END'
 
 '''
 def main(top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):

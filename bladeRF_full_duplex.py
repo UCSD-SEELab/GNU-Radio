@@ -153,7 +153,11 @@ def bladeRF_tx(cen_freq):
   print 'Transmitting on: ' + str(cen_freq)
 
   #write message to send
-  message = [x for x in range(255)]
+  #message = [x for x in range(255)]
+  message = []
+  for i in range(15):
+    for j in range(255):
+      message.append(j)
   pre_header = 'SL1'
   post_header = 'ED1'
 
@@ -215,8 +219,8 @@ def write_message(file, message, pre_header, post_header):
 def bladeRF_rx(cen_freq, bw):
   print 'Receiving on: ' + str(cen_freq)
 
-  pre_headers = ['SL1']
-  post_headers = ['ED1']
+  pre_headers = ['SL1', 'SL2']
+  post_headers = ['ED1', 'ED2']
 
   rx_m_p = rx_processor(pre_headers, post_headers)
 

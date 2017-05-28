@@ -52,7 +52,7 @@ class tx_2400_r2(gr.top_block):
         ##################################################
         self.sps = sps = 10
         self.prefix = prefix = ''
-        self.baud_rate = baud_rate = 2500
+        self.baud_rate = baud_rate = 5000
         self.txvga2 = txvga2 = 25
         self.txvga1 = txvga1 = -4
         self.samp_rate_tx = samp_rate_tx = 400000
