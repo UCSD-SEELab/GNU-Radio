@@ -79,10 +79,11 @@ def write_message(file, message, pre_header, post_header):
   with open(file, 'wb') as f:
     #ba = bytearray(checksum)
     #f.write(ba)
+    f.write(pre_header)
+
     print(ba)
     f.write(struct.pack('B', checksum))
     #ba = bytearray(pre_header)
-    f.write(pre_header)
     ba = bytearray(message)
     f.write(ba)
     #ba = bytearray(post_header)
