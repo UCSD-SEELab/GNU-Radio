@@ -19,8 +19,8 @@ import time
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-tx = True
-rx = False
+tx = False
+rx = True
 scan_best_freqs  = False
 
 center_freq = 433000000
@@ -28,11 +28,13 @@ bandwidth   = 1500000
 
 #transmit variables
 out_file = '_send.bin'
+tx_time = 10
 
 #receive variables
 in_file  = '_out.bin'
 rx_new = True
 rx_process = True
+rx_time = 1
 
 '''[gr_thread]-----------------------------------------------------------------
   Gnuradio interface which allows for callbacks to be made, parallelizing work
@@ -88,12 +90,12 @@ class gr_thread(threading.Thread):
       pre_header = 'SL1'
       post_header = 'ED1'
       write_message(out_file, message2, pre_header, post_header)
-      tx_2400_r2.main(out_file)
+      tx_2400_r2.main(None, None, tx_time, center_freq, out_file)
 
       pre_header = 'SL2'
       post_header = 'ED2'
       write_message(out_file, message3, pre_header, post_header)
-      tx_2400_r2.main(out_file)
+      tx_2400_r2.main(None, None, tx_time, center_freq, out_file)
 
       #transmit bytes over and over
 
@@ -109,7 +111,7 @@ class gr_thread(threading.Thread):
 
       #receive acknowledgement of connection on new frequency
 
-  '''[detect_peaks]------------------------------------------------------------
+  '''[rx]----------------------------------------------------------------------
     Starts a rx_processor on a different thread and schedules in_file accesses
     accordingly with the rx_processor to ensure the in_file is being utilized
     fully and processing old samples can be done while reading new samples.
@@ -128,7 +130,7 @@ class gr_thread(threading.Thread):
         time.sleep(0.1)
 
       if rx_new:
-        rx_2400_r2.main()
+        rx_2400_r2.main(None, None, rx_time, center_freq)
       else:
         time.sleep(5)
 
