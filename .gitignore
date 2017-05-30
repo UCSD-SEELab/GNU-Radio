@@ -1,1 +1,4 @@
-# ignore useless files*.pyc*.bin*.swp
+# ignore useless files
+*.pyc
+*.bin
+*.swp

@@ -23,7 +23,7 @@ tx = False
 rx = True
 scan_best_freqs  = False
 
-center_freq = 433000000
+center_freq = 2450000000
 bandwidth   = 1500000
 
 #transmit variables
@@ -86,6 +86,7 @@ class gr_thread(threading.Thread):
       for j in range(ord('a'), ord('z') + 1):
         message3.append(j)
 
+    #transmit messages continuously
     while True:
       pre_header = 'SL1'
       post_header = 'ED1'
@@ -97,18 +98,10 @@ class gr_thread(threading.Thread):
       write_message(out_file, message3, pre_header, post_header)
       tx_2400_r2.main(None, None, tx_time, center_freq, out_file)
 
-      #transmit bytes over and over
-
-      #TODO implement the below
-
       #broadcast device id as well as best frequencies
-
       #wait for an expected device to connect and broadcast
-
       #propose a frequency change to one of the best current freqs
-
       #receive acknowledge before changing frequency
-
       #receive acknowledgement of connection on new frequency
 
   '''[rx]----------------------------------------------------------------------
@@ -130,7 +123,11 @@ class gr_thread(threading.Thread):
         time.sleep(0.1)
 
       if rx_new:
+        #start_rx = time.time() * 1000
         rx_2400_r2.main(None, None, rx_time, center_freq)
+        #end_rx = time.time() * 1000
+        #rx_time = end_rx - start_rx
+        #TODO pass this into file_ready_callback so processor knows time frame
       else:
         time.sleep(5)
 
@@ -141,17 +138,11 @@ class gr_thread(threading.Thread):
         rx_m_p.file_ready_callback()
 
       #receive messages, print out data rate
-
       #broadcast device id as well as best frequencies
-
       #wait for proposal
-
       #accept if reasonable, otherwise reset process
-
       #broadcast acknowledgement of frequency change
-
       #change frequency
-
       #broadcast acknowledgement of connection on new frequency
 
   '''[run]---------------------------------------------------------------------
