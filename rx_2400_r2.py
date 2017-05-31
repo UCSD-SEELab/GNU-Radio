@@ -175,7 +175,6 @@ class rx_2400_r2(gr.top_block):
         self.freq = freq
         self.osmosdr_source_0.set_center_freq(self.freq, 0)
 
-
 def argument_parser():
     parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
     parser.add_option(
@@ -209,7 +208,6 @@ def main(rx_m_p, top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
         # print '[rx_2400] RX END'
         # print '[rx_2400] Notifying observers'
         rx_m_p.file_ready_callback()
-
 
 '''
 def main(top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
