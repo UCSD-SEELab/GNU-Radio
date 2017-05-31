@@ -44,7 +44,7 @@ import osmosdr
 import time
 #import blade_rx
 import subprocess
-
+import bladeRF_full_duplex
 
 class rx_2400_r2(gr.top_block):
 
@@ -183,7 +183,7 @@ def argument_parser():
         help="Set center_freq [default=%default]")
     return parser
 
-def main(top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
+def main(rx_m_p, top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
     top_block_cls=rx_2400_r2
     if options is None:
         options, _ = argument_parser().parse_args()
@@ -191,21 +191,25 @@ def main(top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
     if freq is not None:
         options.center_freq = freq
     tb = top_block_cls(center_freq=options.center_freq)
-    print '[rx_2400] RX BEGIN'
-    tb.start()
-    start_time = time.time()
-    
-    while (time.time() - start_time < rx_time):
-        time.sleep(0.1)
-        #print(rx)
-    '''
-    try:
-        raw_input('Press Enter to quit: ')
-    except EOFError:
-        pass'''
-    tb.stop()
-    tb.wait()
-    print '[rx_2400] RX END'
+    while(1):
+        # print '[rx_2400] RX BEGIN'
+        tb.start()
+        start_time = time.time()
+        
+        while (time.time() - start_time < rx_time):
+            time.sleep(0.1)
+            #print(rx)
+        '''
+        try:
+            raw_input('Press Enter to quit: ')
+        except EOFError:
+            pass'''
+        tb.stop()
+        tb.wait()
+        # print '[rx_2400] RX END'
+        # print '[rx_2400] Notifying observers'
+        rx_m_p.file_ready_callback()
+
 
 '''
 def main(top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):

@@ -23,7 +23,7 @@ tx = False
 rx = True
 scan_best_freqs  = False
 
-center_freq = 2450000000
+center_freq = 433920000
 bandwidth   = 1500000
 
 #transmit variables
@@ -35,6 +35,7 @@ in_file  = '_out.bin'
 rx_new = True
 rx_process = True
 rx_time = 1
+print_received_transmissions = True
 
 '''[gr_thread]-----------------------------------------------------------------
   Gnuradio interface which allows for callbacks to be made, parallelizing work
@@ -62,7 +63,7 @@ class gr_thread(threading.Thread):
   --------------------------------------------------------------------------'''
   def file_ready_callback(self):
     self.file_busy = True
-    print '[gr_thread] File ready callback received.'
+    #print '[gr_thread] File ready callback received.'
 
   '''[tx]----------------------------------------------------------------------
     Writes predefined messages to out_file, then transmits continuously until 
@@ -117,6 +118,9 @@ class gr_thread(threading.Thread):
 
     rx_m_p = rx_processor(self, pre_headers, post_headers)
 
+    rx_2400_r2.main(rx_m_p, None, None, rx_time, center_freq)
+
+    '''
     while True:
       #wait for file ready before calling rx_2400_r2.main()
       while not self.file_busy:
@@ -124,6 +128,8 @@ class gr_thread(threading.Thread):
 
       if rx_new:
         #start_rx = time.time() * 1000
+        #get gps readings
+        #get power readings
         rx_2400_r2.main(None, None, rx_time, center_freq)
         #end_rx = time.time() * 1000
         #rx_time = end_rx - start_rx
@@ -136,6 +142,7 @@ class gr_thread(threading.Thread):
       if rx_process:
         print '[gr_thread] File filled.'
         rx_m_p.file_ready_callback()
+      '''
 
       #receive messages, print out data rate
       #broadcast device id as well as best frequencies
@@ -186,14 +193,17 @@ class rx_processor(threading.Thread):
   --------------------------------------------------------------------------'''
   def file_ready_callback(self):
     self.file_busy = True
-    print '[rx_processor] File ready callback received.'
+    #print '[rx_processor] File ready callback received.'
 
   '''[rx_spin]-----------------------------------------------------------------
     Reads stream into a list containing bitstream for further processing later.
   --------------------------------------------------------------------------'''
-  def rx_spin(self):
+  def rx_spin(self, pos):
     with open(in_file, 'rb') as f:
-      
+      f.seek(pos)
+
+      print '[rx_processor] Starting at pos: ' + str(pos)
+
       stuff = f.read(1)
       
       l = []
@@ -205,7 +215,8 @@ class rx_processor(threading.Thread):
 
       print '[rx_processor] Bitstream Length: ' + str(len(l))
       #TODO do something with this
-    print '[rx_processor] File read complete.'
+      #print '[rx_processor] File read complete.'
+      return f.tell()
 
   '''[extract_by_headers]------------------------------------------------------
     Look for pre and post headers in bitstream, extract message if found.
@@ -216,11 +227,13 @@ class rx_processor(threading.Thread):
   def extract_by_headers(self, pre_headers, post_headers, message):
     l = []
 
-    print '[rx_processor] Processing stream'
+    if print_received_transmissions:
+      print '[rx_processor] Processing stream'
     
     #look for headers in message
     for pre_header, post_header in zip(pre_headers, post_headers):
-      print 'Looking for:', pre_header, post_header
+      if print_received_transmissions:
+        print 'Looking for:', pre_header, post_header
       
       start_i = 0
       end_i = 0
@@ -234,7 +247,8 @@ class rx_processor(threading.Thread):
         #found start header
         if n == pre_header:
           start_i = i + len(pre_header) * 8
-          print '-----[TRANSMISSION START FOUND]-[' + pre_header + ']-[' + str(i) + ']'
+          if print_received_transmissions:
+            print '--[TRANSMISSION START FOUND]-[' + pre_header + ']-[' + str(i) + ']'
         
         #found end header
         if n == post_header:
@@ -255,9 +269,9 @@ class rx_processor(threading.Thread):
           for curr_i in range(start_i, end_i, 8):
             n += read_byte(message, curr_i, 'c')
           
-          print n
-
-          print '-----[TRANSMISSION END FOUND  ]-[' + post_header + ']-[' + str(i) + ']'
+          if print_received_transmissions:
+            print '  ' + n
+            print '--[TRANSMISSION END FOUND  ]-[' + post_header + ']-[' + str(i) + ']'
           
           
           #verify checksum
@@ -266,14 +280,19 @@ class rx_processor(threading.Thread):
             actual_checksum += ord(byte)
           actual_checksum = actual_checksum % 256
 
-          print 'Message_Checksum: ' + str(checksum)
-          print 'Actual_checksum:  ' + str(actual_checksum)
+          if print_received_transmissions:
+            print '  Message_Checksum: ' + str(checksum)
+            print '  Actual_checksum:  ' + str(actual_checksum)
           if checksum == actual_checksum:
-            print 'Checksum valid'
+            if print_received_transmissions:
+              print '  Checksum valid'
             l.append(n)
           else:
-            print 'Checksum invalid'
-          print ''
+            if print_received_transmissions:
+              print '  Checksum invalid'
+
+          if print_received_transmissions:
+            print ''
 
     return l
 
@@ -282,20 +301,24 @@ class rx_processor(threading.Thread):
   --------------------------------------------------------------------------'''
   def run(self):
     print '[rx_processor] Thread running'
+    curr_file_pos = 0
     while True:
       if self.file_busy:
-
+        print ''
+        start_time = time.time() * 1000
         #access stream
-        self.rx_spin()
+        curr_file_pos = self.rx_spin(curr_file_pos)
 
         #done accessing stream
         self.file_busy = False
         self.gr_thread.file_ready_callback()
 
+        end_time = time.time() * 1000
+
         #process stream
         extracted = self.extract_by_headers(self.pre_h, self.post_h, self.message)
-        
-        print '[rx_processor] Stream processed.'
+        print '[rx_processor] Extracted Packets: ' + str(len(extracted))
+        print '[rx_processor] Stream processed. Time: ' + str(end_time - start_time)
 
 #TODO integrate with new class or gnuradio_thread
 
