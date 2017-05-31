@@ -173,6 +173,7 @@ class tx_2400_r2(gr.top_block):
 
 
 def argument_parser():
+
     parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
     parser.add_option(
         "-f", "--center-freq", dest="center_freq", type="intx", default=440000000,
@@ -184,8 +185,10 @@ def argument_parser():
 
 
 def main(top_block_cls=tx_2400_r2, options=None, tx_time=5, freq=None, fn=None):
+    
     top_block_cls=tx_2400_r2
     # blade_rx.blade_rf_sdr(1)
+
     if options is None:
         options, _ = argument_parser().parse_args()
 
@@ -194,14 +197,58 @@ def main(top_block_cls=tx_2400_r2, options=None, tx_time=5, freq=None, fn=None):
         options.filename=fn
 
     tb = top_block_cls(center_freq=options.center_freq, filename=options.filename)
-    tb.start()
-    start_time = time.time()
     
-    while (time.time() - start_time < tx_time):
-        time.sleep(0.5)
-    
-    tb.stop()
-    tb.wait()
+    filenames = []
+    filenames.append('_send1.bin')
+    filenames.append('_send2.bin')
+    filenames.append('_send3.bin')
+
+    freq1 = 433920000
+    freq2 = 915000000
+    freq3 = 2450000000
+
+    while True:
+
+        print '[tx] File: ' + filenames[0] + ' Freq: ' + str(freq1)
+        tb.set_filepath(filenames[0])
+        tb.set_center_freq(freq1)
+
+        tb.start()
+        start_time = time.time()
+
+        while (time.time() - start_time < tx_time):
+            time.sleep(0.1)
+
+        tb.stop()
+        tb.wait()
+
+        print '[tx] File: ' + filenames[1] + ' Freq: ' + str(freq2)
+
+        tb.set_filepath(filenames[1])
+        tb.set_center_freq(freq2)
+
+        tb.start()
+        start_time = time.time()
+
+        while (time.time() - start_time < tx_time):
+            time.sleep(0.1)
+
+        tb.stop()
+        tb.wait()
+
+        print '[tx] File: ' + filenames[2] + ' Freq: ' + str(freq3)
+
+        tb.set_filepath(filenames[2])
+        tb.set_center_freq(freq3)
+
+        tb.start()
+        start_time = time.time()
+
+        while (time.time() - start_time < tx_time):
+            time.sleep(0.1)
+
+        tb.stop()
+        tb.wait()
 
 
 if __name__ == '__main__':

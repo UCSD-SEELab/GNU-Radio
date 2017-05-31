@@ -190,7 +190,7 @@ def main(rx_m_p, top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
     if freq is not None:
         options.center_freq = freq
     tb = top_block_cls(center_freq=options.center_freq)
-    while(1):
+    while True:
         # print '[rx_2400] RX BEGIN'
         tb.start()
         start_time = time.time()

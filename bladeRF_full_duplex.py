@@ -19,8 +19,8 @@ import time
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-tx = False
-rx = True
+tx = True
+rx = False
 scan_best_freqs  = False
 
 center_freq = 433920000
@@ -28,7 +28,7 @@ bandwidth   = 1500000
 
 #transmit variables
 out_file = '_send.bin'
-tx_time = 10
+tx_time = 1
 
 #receive variables
 in_file  = '_out.bin'
@@ -49,14 +49,6 @@ class gr_thread(threading.Thread):
     self.daemon = True
     self.baud_rate = baud_rate
     self.start()
-    ''' TODO set_baud_rate doesn't seem to be working, neither does center_freq
-    if tx:
-      self.gr_tx = tx_2400_r2.tx_2400_r2()
-      self.gr_tx.set_baud_rate(self.baud_rate)
-    elif rx:
-      self.gr_rx = rx_2400_r2.rx_2400_r2()
-      self.gr_rx.set_baud_rate(self.baud_rate)
-    '''
   
   '''[file_ready_callback]-----------------------------------------------------
     Gives gr_thread a notification that the in_file is ready for access.
@@ -71,6 +63,11 @@ class gr_thread(threading.Thread):
   --------------------------------------------------------------------------'''
   def tx(self):
     print 'Transmitting on: ' + str(self.cen_freq)
+
+    out_files = []
+    out_files.append('_send1.bin')
+    out_files.append('_send2.bin')
+    out_files.append('_send3.bin')
 
     #length 256 message
     message1 = [x for x in range(255)]
@@ -87,23 +84,38 @@ class gr_thread(threading.Thread):
       for j in range(ord('a'), ord('z') + 1):
         message3.append(j)
 
+    pre_header = 'SL1'
+    post_header = 'ED1'
+    write_message(out_files[0], message1, pre_header, post_header)
+
+    pre_header = 'SL2'
+    post_header = 'ED2'
+    write_message(out_files[1], message2, pre_header, post_header)
+
+    pre_header = 'SL3'
+    post_header = 'ED3'
+    write_message(out_files[2], message3, pre_header, post_header)
+
+    tx_2400_r2.main(None, None, tx_time, center_freq, out_file)
     #transmit messages continuously
+    '''
     while True:
       pre_header = 'SL1'
       post_header = 'ED1'
-      write_message(out_file, message2, pre_header, post_header)
+      write_message(, message2, pre_header, post_header)
       tx_2400_r2.main(None, None, tx_time, center_freq, out_file)
 
       pre_header = 'SL2'
       post_header = 'ED2'
       write_message(out_file, message3, pre_header, post_header)
       tx_2400_r2.main(None, None, tx_time, center_freq, out_file)
-
+    
       #broadcast device id as well as best frequencies
       #wait for an expected device to connect and broadcast
       #propose a frequency change to one of the best current freqs
       #receive acknowledge before changing frequency
       #receive acknowledgement of connection on new frequency
+    '''
 
   '''[rx]----------------------------------------------------------------------
     Starts a rx_processor on a different thread and schedules in_file accesses
@@ -113,8 +125,8 @@ class gr_thread(threading.Thread):
   def rx(self):
     print 'Receiving on: ' + str(self.cen_freq)
 
-    pre_headers = ['SL1', 'SL2']
-    post_headers = ['ED1', 'ED2']
+    pre_headers = ['SL1', 'SL2', 'SL3']
+    post_headers = ['ED1', 'ED2', 'ED3']
 
     rx_m_p = rx_processor(self, pre_headers, post_headers)
 
@@ -231,6 +243,9 @@ class rx_processor(threading.Thread):
       print '[rx_processor] Processing stream'
     
     #look for headers in message
+
+    #TODO this works ok for variable length headers, but look into tring each
+    #header while iterating through so only have to iterate once.
     for pre_header, post_header in zip(pre_headers, post_headers):
       if print_received_transmissions:
         print 'Looking for:', pre_header, post_header
@@ -343,6 +358,7 @@ def write_message(file, message, pre_header, post_header):
 
   print '[write_message]-[' + str(checksum) + ']'
   print ba
+  print ''
 
   with open(file, 'wb') as f:
     f.write(pre_header)
@@ -373,18 +389,19 @@ def read_byte(stream, start_ind, type='i'):
 
 
 '''[Actual script]----------------------------------------------------------'''
+def main():
 
-sdr = blade_rx.blade_rf_sdr(1)
-#sdr.set_bandwidth('all', 1.5)
-sdr.set_center_freq('all', center_freq / 1000000)
+  sdr = blade_rx.blade_rf_sdr(1)
+  if scan_best_freqs:
+    #get list of best frequencies
+    best_freqs = bladeRF_scanner.main()
 
-if scan_best_freqs:
-  #get list of best frequencies
-  best_freqs = bladeRF_scanner.main()
+    #take lowest interference frequency and set it to center_freq for now
+    center_freq = best_freqs[0]
 
-  #take lowest interference frequency and set it to center_freq for now
-  center_freq = best_freqs[0]
+  gr = gr_thread()
+  gr.file_ready_callback()
+  gr.join()
 
-gr = gr_thread()
-gr.file_ready_callback()
-gr.join()
+if __name__ == '__main__':
+  main()
