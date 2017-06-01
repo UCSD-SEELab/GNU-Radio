@@ -19,8 +19,8 @@ import time
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-tx = True
-rx = False
+tx = False
+rx = True
 scan_best_freqs  = False
 
 center_freq = 433920000
@@ -34,7 +34,7 @@ tx_time = 1
 in_file  = '_out.bin'
 rx_new = True
 rx_process = True
-rx_time = 1
+rx_time = 60
 print_received_transmissions = True
 
 '''[gr_thread]-----------------------------------------------------------------
@@ -130,7 +130,7 @@ class gr_thread(threading.Thread):
 
     rx_m_p = rx_processor(self, pre_headers, post_headers)
 
-    rx_2400_r2.main(rx_m_p, None, None, rx_time, center_freq)
+    rx_2400_r2.main(None, None, rx_time, center_freq)
 
     '''
     while True:
@@ -173,11 +173,11 @@ class gr_thread(threading.Thread):
     elif rx:
       self.rx()
     
-  '''[rx_processor]------------------------------------------------------------
-    Reads in and processes received samples. Reading in is done on a callback
-    system so the file is not accessed while it is being written to, but
-    processing is done in parallel with receiving new samples.
-  --------------------------------------------------------------------------'''
+'''[rx_processor]--------------------------------------------------------------
+  Reads in and processes received samples. Reading in is done on a callback
+  system so the file is not accessed while it is being written to, but
+  processing is done in parallel with receiving new samples.
+----------------------------------------------------------------------------'''
 class rx_processor(threading.Thread):
 
   def __init__(self, gr_thread, pre_headers = [], post_headers = []):
@@ -318,22 +318,25 @@ class rx_processor(threading.Thread):
     print '[rx_processor] Thread running'
     curr_file_pos = 0
     while True:
-      if self.file_busy:
-        print ''
-        start_time = time.time() * 1000
-        #access stream
-        curr_file_pos = self.rx_spin(curr_file_pos)
+      wait_start = time.time()
+      while(time.time() - wait_start < 1):
+        time.sleep(0.1)
 
-        #done accessing stream
-        self.file_busy = False
-        self.gr_thread.file_ready_callback()
+      print ''
+      start_time = time.time() * 1000
+      #access stream
+      curr_file_pos = self.rx_spin(curr_file_pos)
 
-        end_time = time.time() * 1000
+      #done accessing stream
+      self.file_busy = False
+      self.gr_thread.file_ready_callback()
 
-        #process stream
-        extracted = self.extract_by_headers(self.pre_h, self.post_h, self.message)
-        print '[rx_processor] Extracted Packets: ' + str(len(extracted))
-        print '[rx_processor] Stream processed. Time: ' + str(end_time - start_time)
+      end_time = time.time() * 1000
+
+      #process stream
+      extracted = self.extract_by_headers(self.pre_h, self.post_h, self.message)
+      print '[rx_processor] Extracted Packets: ' + str(len(extracted))
+      print '[rx_processor] Stream processed. Time: ' + str(end_time - start_time)
 
 #TODO integrate with new class or gnuradio_thread
 

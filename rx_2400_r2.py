@@ -42,9 +42,7 @@ from optparse import OptionParser
 import math
 import osmosdr
 import time
-#import blade_rx
 import subprocess
-import bladeRF_full_duplex
 
 class rx_2400_r2(gr.top_block):
 
@@ -182,7 +180,7 @@ def argument_parser():
         help="Set center_freq [default=%default]")
     return parser
 
-def main(rx_m_p, top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
+def main(top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
     top_block_cls=rx_2400_r2
     if options is None:
         options, _ = argument_parser().parse_args()
@@ -190,24 +188,53 @@ def main(rx_m_p, top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
     if freq is not None:
         options.center_freq = freq
     tb = top_block_cls(center_freq=options.center_freq)
+
+    tb.start()
+
+    start_time = time.time()
+    count = 0
+
+    while (time.time() - start_time < rx_time):
+        time.sleep(0.1)
+        count += 1
+
+        if count % 30 == 10:
+            print '[rx] Switching frequency to: 433920000'
+            tb.set_center_freq(433920000)
+        elif count % 30 == 20:
+            print '[rx] Switching frequency to: 915000000'
+            tb.set_center_freq(915000000)
+        elif count % 30 == 0:
+            print '[rx] Switching frequency to: 2450000000'
+            tb.set_center_freq(2450000000)
+
+    tb.stop()
+    tb.wait()
+
+    '''
     while True:
         # print '[rx_2400] RX BEGIN'
         tb.start()
+
+        
         start_time = time.time()
         
         while (time.time() - start_time < rx_time):
             time.sleep(0.1)
             #print(rx)
-        '''
+        
+        
         try:
             raw_input('Press Enter to quit: ')
         except EOFError:
-            pass'''
+            pass
+
         tb.stop()
         tb.wait()
         # print '[rx_2400] RX END'
         # print '[rx_2400] Notifying observers'
-        rx_m_p.file_ready_callback()
+        # rx_m_p.file_ready_callback()
+    '''
 
 '''
 def main(top_block_cls=rx_2400_r2, options=None, rx_time=5, freq=None):
