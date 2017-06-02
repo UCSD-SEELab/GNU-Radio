@@ -32,6 +32,7 @@ tx_time = 1
 
 #receive variables
 in_file  = '_out.bin'
+fft_file = 'log_power_fft_data.bin'
 rx_new = True
 rx_process = True
 rx_time = 60
@@ -404,6 +405,8 @@ def main():
 
   gr = gr_thread()
   gr.file_ready_callback()
+
+  scanner = bladeRF_scanner.bladeRF_scanner()
   gr.join()
 
 if __name__ == '__main__':
