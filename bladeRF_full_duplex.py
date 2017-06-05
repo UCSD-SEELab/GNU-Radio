@@ -15,6 +15,7 @@ import blade_rx
 import sys
 import threading
 import time
+from mavlink_stuff.ardupilot import ArduPilot
 
 '''----------------------------------------------------------------------------
 Config variables
@@ -97,7 +98,8 @@ class gr_thread(threading.Thread):
     post_header = 'ED3'
     write_message(out_files[2], message3, pre_header, post_header)
 
-    tx_2400_r2.main(None, None, tx_time, center_freq, out_file)
+    #tx_2400_r2.main(None, None, tx_time, center_freq)
+    tx_2400_r2.main()
     #transmit messages continuously
     '''
     while True:
@@ -183,6 +185,7 @@ class rx_processor(threading.Thread):
 
   def __init__(self, gr_thread, pre_headers = [], post_headers = []):
     super(rx_processor, self).__init__()
+    self.file_pos = 0
     self.pre_h = pre_headers
     self.post_h = post_headers
     self.message = []
@@ -312,32 +315,43 @@ class rx_processor(threading.Thread):
 
     return l
 
+  def get_file_pos(self):
+    return self.file_pos
+
   '''[run]---------------------------------------------------------------------
     Starts when thread is run.
   --------------------------------------------------------------------------'''
   def run(self):
     print '[rx_processor] Thread running'
-    curr_file_pos = 0
-    while True:
-      wait_start = time.time()
-      while(time.time() - wait_start < 1):
-        time.sleep(0.1)
+    self.file_pos = 0
 
-      print ''
-      start_time = time.time() * 1000
-      #access stream
-      curr_file_pos = self.rx_spin(curr_file_pos)
+    with open('gps_readings', 'w') as f_gps:
+      with open('bitstream_pos', 'w') as f_bs:
+        while True:
+          wait_start = time.time()
+          while(time.time() - wait_start < 1):
+            time.sleep(0.1)
 
-      #done accessing stream
-      self.file_busy = False
-      self.gr_thread.file_ready_callback()
+          print ''
+          start_time = time.time() * 1000
+          #access stream
+          self.file_pos = self.rx_spin(self.file_pos)
 
-      end_time = time.time() * 1000
+          #done accessing stream
+          self.file_busy = False
+          self.gr_thread.file_ready_callback()
 
-      #process stream
-      extracted = self.extract_by_headers(self.pre_h, self.post_h, self.message)
-      print '[rx_processor] Extracted Packets: ' + str(len(extracted))
-      print '[rx_processor] Stream processed. Time: ' + str(end_time - start_time)
+          #write GPS data
+          print '[GPS] writing GPS data'
+          #f_gps.write(AP.getLocation() + '\n')
+          f_bs.write(str(self.file_pos) + '\n')
+
+          end_time = time.time() * 1000
+
+          #process stream
+          extracted = self.extract_by_headers(self.pre_h, self.post_h, self.message)
+          print '[rx_processor] Extracted Packets: ' + str(len(extracted))
+          print '[rx_processor] Stream processed. Time: ' + str(end_time - start_time)
 
 #TODO integrate with new class or gnuradio_thread
 
@@ -395,6 +409,8 @@ def read_byte(stream, start_ind, type='i'):
 '''[Actual script]----------------------------------------------------------'''
 def main():
 
+  #AP = ArduPilot('udp:localhost:14550', 15200, True)
+
   sdr = blade_rx.blade_rf_sdr(1)
   if scan_best_freqs:
     #get list of best frequencies
@@ -407,6 +423,26 @@ def main():
   gr.file_ready_callback()
 
   scanner = bladeRF_scanner.bladeRF_scanner()
+
+  count = 0
+  
+  #GPS
+  '''
+  with open('gps_readings', 'w') as f:
+    while True:
+
+      #every second, get location
+      wait_start = time.time()
+      while(time.time() - wait_start < 1):
+        time.sleep(0.1)
+
+      f.write(AP.getLocation())
+      count += 1
+
+      if count == rx_time:
+        break
+  '''
+
   gr.join()
 
 if __name__ == '__main__':

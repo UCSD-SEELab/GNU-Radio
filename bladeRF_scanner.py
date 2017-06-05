@@ -22,7 +22,7 @@ center_freq  = 433920000
 bandwidth    = 1500000
 section_bw   = 50000
 max_usable   = 50
-fft_size     = 2048
+fft_size     = 1024
 fft_filename = 'log_power_fft_data.bin'
 
 class bladeRF_scanner(threading.Thread):
@@ -142,6 +142,8 @@ class bladeRF_scanner(threading.Thread):
         fft.append(struct.unpack('f', float_val)[0])
         float_val = f.read(4)
 
+      print '[scanner] Fft length: ' + str(len(fft))
+
       return fft, f.tell()
 
   def RSSI(self, cen_freq, bw, fft):
@@ -222,15 +224,17 @@ class bladeRF_scanner(threading.Thread):
     print '[scanner] Thread running'
 
     curr_file_pos = 0
-    while True:
+    with open('rssi_data', 'w') as f:
+      while True:
 
-      wait_start = time.time()
-      while(time.time() - wait_start < 1):
-        time.sleep(0.1)
+        wait_start = time.time()
+        while(time.time() - wait_start < 1):
+          time.sleep(0.1)
 
-      fft, curr_file_pos = self.scanner_spin(curr_file_pos)
-      rssi = self.RSSI(self.cen_freq, self.bw, fft)
-      print '[scanner] RSSI: ' + str(rssi) + ' Freq: ' + str(self.cen_freq)
+        fft, curr_file_pos = self.scanner_spin(curr_file_pos)
+        rssi = self.RSSI(self.cen_freq, self.bw, fft)
+        print '[scanner] RSSI: ' + str(rssi) + ' Freq: ' + str(self.cen_freq)
+        f.write(str(rssi) + '\n')
 #def main():
   #gather samples
   #bladeRF_fft.main()
