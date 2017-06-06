@@ -1,10 +1,34 @@
 '''*-----------------------------------------------------------------------*---
                                                           Author: Jason Ma
                                                           Date  : May 22 2017
-    File Name  : bladeRF_full_duplex.py
-    Description: Communication protocols for bladeRF to bladeRF communications.
-                 A good portion of this was inspired by and uses Stephen 
-                 Wayne's FSK communication protocols.
+
+    File Name  : bladeRF_top_level.py
+    Description: Allows for either transmitting or receiving data using the
+                 appropriate GNURadio modules and a BladeRF board. 
+                 
+                          bladeRF_top_level
+                         /        |        \
+                 gr_thread     scanner     rx_processor
+                   /       \      |      /
+                 BladeRF      _out.bin
+                              _send.bin
+
+                 bladeRF_top_level initializes all the other threads:
+                   - gr_thread
+                   - scanner
+                   - rx_processor
+
+                 - gr_thread interfaces with GNURadio to open the BladeRF and
+                 do whatever GNURadio wants to do with it.
+
+                 - scanner has peak detection and RSSI measuring capability.
+
+                 - rx_processor processes the data received, including the
+                 bitstream containing communication data, GPS, and anything
+                 else being collected.
+
+                 A good portion of this was inspired by and builds on Stephen 
+                 Wayne's FSK GNURadio modules.
 ---*-----------------------------------------------------------------------*'''
 
 import tx_2400_r2
@@ -20,8 +44,8 @@ from mavlink_stuff.ardupilot import ArduPilot
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-tx = False
-rx = True
+tx = True
+rx = False
 scan_best_freqs  = False
 
 center_freq = 433920000
