@@ -1,3 +1,14 @@
+'''*-----------------------------------------------------------------------*---
+                                                          Author: Jason Ma
+                                                          Date  : Jun 07 2017
+
+    File Name  : gnuradio_interface.py
+    Description: gnuradio_interface calls either rx_2400_r2 or tx_2400_r2
+                 depending on configuration to either receive or transmit
+                 data using FSK modulation. It also starts a rx_processor
+                 thread to process either old or live data.
+---*-----------------------------------------------------------------------*'''
+
 import tx_2400_r2
 import rx_2400_r2
 import threading
@@ -9,8 +20,8 @@ from mavlink_stuff.ardupilot import ArduPilot
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-tx = False
-rx = True
+tx = True
+rx = False
 pre_headers = ['SL1', 'SL2', 'SL3']
 post_headers = ['ED1', 'ED2', 'ED3']
 

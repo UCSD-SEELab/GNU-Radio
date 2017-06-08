@@ -1,7 +1,20 @@
+'''*-----------------------------------------------------------------------*---
+                                                          Author: Jason Ma
+                                                          Date  : Jun 07 2017
+
+    File Name  : top_level_bladeRF.py
+    Description: rx_processor processes the data received, including the
+                 bitstream containing communication data, GPS, and anything
+                 else being collected. This can be set to work on old or new
+                 data.
+
+---*-----------------------------------------------------------------------*'''
+
 import threading
 import time
 import struct
-from pymavlink import mavutil
+from mavlink_stuff.ardupilot import ArduPilot
+#from pymavlink import mavutil
 
 '''----------------------------------------------------------------------------
 Config variables
@@ -79,7 +92,9 @@ class rx_processor(threading.Thread):
     self.file_pos = 0
 
     if gps_new:
-      gps = mavutil.mavlink_connection('udp:localhost:14550', planner_format=False, robust_parsing=True)
+      #gps = mavutil.mavlink_connection('udp:localhost:14550', planner_format=False, robust_parsing=True)
+      gps = ArduPilot('udp:localhost:14550', 15200, True)
+      gps.setDataStreams()
 
     with open('gps_data', "w+") as f_gps:
       with open('bitstream_pos', "w+") as f_bs:
@@ -105,7 +120,12 @@ class rx_processor(threading.Thread):
 
           #write GPS data
           if gps_new:
-            msg = gps.recv_match()
+            try:
+              msg = gps.getLocation()
+            except Exception:
+              print '[gps] exception'
+            #msg = gps.recv_match()
+
             if msg is not None:
               f_gps.write(str(msg) + '\n')
             else:

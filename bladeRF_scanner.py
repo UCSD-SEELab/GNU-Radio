@@ -49,6 +49,7 @@ class bladeRF_scanner(threading.Thread):
     max_peaks  - max amount of peaks to return
     fft_size   - number of data points in each FFT window
     filename   - file containing the FFT data
+    pos        - position to start at in file
     return     - vector containing peaks of the data
   --------------------------------------------------------------------------'''
   def detect_peaks(self, cen_freq, bw, max_peaks, fft_size, filename, pos):
@@ -171,7 +172,7 @@ class bladeRF_scanner(threading.Thread):
     fft_size   - number of data points in each FFT window
     filename   - file containing the FFT data
   --------------------------------------------------------------------------'''
-  def select_usable_by_section(self, cen_freq, bw, section_bw, max_usable, fft_size, filename):
+  def select_usable_by_section(self, cen_freq, bw, section_bw=50000, max_usable=50, fft_size=2048, filename='log_power_fft_data.bin'):
     #f = scipy.fromfile(open(filename), dtype=scipy.float32)
       
     f = []

@@ -8,6 +8,31 @@
 --------------------------------------------------------------------------------
 Contains utilities and tools usable with BladeRF that interface with GNURadio.
 These have been tested on both Linux and Windows platforms
+
+                      top_level_bladeRF
+                     /                 \
+                scanner                 gnuradio_interface 
+               /                       /        |         \
+             BladeRF         rx_2400_r2      tx_2400_r2    rx_processor
+
+- top_level_bladeRF initializes all the other threads:
+  - gnuradio_interface
+    - rx_processor
+  - scanner
+  It allows for smooth exiting so nothing gets locked up.
+
+- gnuradio_interface calls either rx_2400_r2 or tx_2400_r2 depending on 
+  configuration to either receive or transmit data using FSK modulation. It 
+  also starts a rx_processor thread to process either old or live data.
+
+- rx_processor processes the data received, including the bitstream containing
+  communication data, GPS, and anything else being collected. This can be set 
+  to work on old or new data.
+
+- scanner has peak detection and RSSI measuring capability.
+
+A good portion of this was inspired by and builds on Stephen Wayne's FSK 
+GNURadio modules.
 --------------------------------------------------------------------------------
 Setting up Dependencies:
 
