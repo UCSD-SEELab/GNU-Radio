@@ -22,20 +22,13 @@ Config variables
 ----------------------------------------------------------------------------'''
 tx = True
 rx = False
-pre_headers = ['SL1', 'SL2', 'SL3']
-post_headers = ['ED1', 'ED2', 'ED3']
 
 #transmit variables
 out_file = '_send.bin'
-tx_time = 1
+tx_time  = 1
 
 #receive variables
-in_file  = '_out.bin'
-fft_file = 'log_power_fft_data.bin'
-rx_process = True
-rx_new     = True
-rx_time    = 60
-print_received_transmissions = True
+rx_time  = 60
 
 '''[gr_thread]-----------------------------------------------------------------
   Gnuradio interface which allows for callbacks to be made, parallelizing work
@@ -48,14 +41,14 @@ class gr_thread(threading.Thread):
     self.callback = False
     self.daemon = True
     self.baud_rate = baud_rate
-    self.rx_m_p = rx_processor.rx_processor(self, pre_headers, post_headers)
-  
+    #self.rx_m_p = rx_processor.rx_processor(self, pre_headers, post_headers)
+
   '''[end_callback]------------------------------------------------------------
     Ends thread
   --------------------------------------------------------------------------'''
   def end_callback(self):
     self.callback = True
-    self.rx_m_p.end_callback()
+    #self.rx_m_p.end_callback()
     print '[gr_thread] Callback received. Shutting down'
 
   '''[tx]----------------------------------------------------------------------
@@ -108,14 +101,14 @@ class gr_thread(threading.Thread):
 
     print 'Receiving on: ' + str(self.cen_freq)
 
-    if rx_process:
-      self.rx_m_p.start()
+    #if rx_process:
+    #  self.rx_m_p.start()
 
     if rx_new:
       rx_2400_r2.main(None, None, rx_time, self.cen_freq)
 
-    if rx_process:
-      self.rx_m_p.join(1000)
+    #if rx_process:
+    #  self.rx_m_p.join(1000)
 
 
   '''[run]---------------------------------------------------------------------

@@ -24,7 +24,7 @@ gps_new = True
 rx_new = True
 rx_process = True
 rx_time = 60
-print_received_transmissions = True
+print_verbose = False
 
 '''[rx_processor]--------------------------------------------------------------
   Reads in and processes received samples. Reading in is done on a callback
@@ -33,15 +33,15 @@ print_received_transmissions = True
 ----------------------------------------------------------------------------'''
 class rx_processor(threading.Thread):
 
-  def __init__(self, gr_thread, pre_headers = [], post_headers = []):
+  def __init__(self, pre_headers = [], post_headers = []):
     super(rx_processor, self).__init__()
     self.file_pos = 0
     self.pre_h = pre_headers
     self.post_h = post_headers
     self.message = []
     self.callback = False
-    self.gr_thread = gr_thread
     self.daemon = True
+    self.filewrite = False
 
   '''[update_headers]----------------------------------------------------------
     Updates the headers being looked for
@@ -52,6 +52,13 @@ class rx_processor(threading.Thread):
   def update_headers(self, pre_headers, post_headers):
     pre_h = pre_headers
     post_h = post_headers
+
+  '''[filewrite_callback]------------------------------------------------------
+    Ends thread
+  --------------------------------------------------------------------------'''
+  def filewrite_callback(self):
+    self.filewrite = True
+    #print '[rx_processor] Callback received. Writing to file'
 
   '''[end_callback]------------------------------------------------------------
     Ends thread
@@ -103,18 +110,17 @@ class rx_processor(threading.Thread):
           if self.callback:
             break
 
-          wait_start = time.time()
-          while(time.time() - wait_start < 1):
+          while not self.filewrite:
             time.sleep(0.1)
 
-          print ''
+          self.filewrite = False
+
           start_time = time.time() * 1000
           #access stream
           self.file_pos = self.rx_spin(self.file_pos)
 
           #done accessing stream
           self.file_busy = False
-          #self.gr_thread.callback()
 
           print '[rx_processor] writing GPS and RSSI data'
 
@@ -123,8 +129,27 @@ class rx_processor(threading.Thread):
             try:
               msg = gps.getLocation()
             except Exception:
-              print '[gps] exception'
-            #msg = gps.recv_match()
+              print '[gps] exception: location'
+
+            if msg is not None:
+              f_gps.write(str(msg) + '\n')
+            else:
+              f_gps.write('nothing\n')
+
+            try:
+              msg = gps.getHeading()
+            except Exception:
+              print '[gps] exception: heading'
+
+            if msg is not None:
+              f_gps.write(str(msg) + '\n')
+            else:
+              f_gps.write('nothing\n')
+
+            try:
+              msg = gps.getAltitude()
+            except Exception:
+              print '[gps] exception: altitude'
 
             if msg is not None:
               f_gps.write(str(msg) + '\n')
@@ -139,7 +164,11 @@ class rx_processor(threading.Thread):
 
           #process stream
           extracted = extract_by_headers(self.pre_h, self.post_h, self.message)
-          print '[rx_processor] Extracted Packets: ' + str(len(extracted)) + '\tTime: ' + str(end_time - start_time)
+          
+          if len(extracted) > 0:
+            print '[rx_processor] Successful packet transfer!'
+
+          print '[rx_processor] Valid Packets: ' + str(len(extracted)) + '\tTime: ' + str(end_time - start_time)
 
 '''[extract_by_headers]--------------------------------------------------------
   Look for pre and post headers in bitstream, extract message if found.
@@ -150,15 +179,17 @@ class rx_processor(threading.Thread):
 def extract_by_headers(pre_headers, post_headers, message):
   l = []
 
-  if print_received_transmissions:
+  if print_verbose:
     print '[rx_processor] Processing stream'
   
+  if pre_headers == [] or post_headers == []:
+    print '[rx_processor] Warning: empty headers'
   #look for headers in message
 
   #TODO this works ok for variable length headers, but look into tring each
   #header while iterating through so only have to iterate once.
   for pre_header, post_header in zip(pre_headers, post_headers):
-    if print_received_transmissions:
+    if print_verbose:
       print 'Looking for:', pre_header, post_header
     
     start_i = 0
@@ -173,7 +204,7 @@ def extract_by_headers(pre_headers, post_headers, message):
       #found start header
       if n == pre_header:
         start_i = i + len(pre_header) * 8
-        if print_received_transmissions:
+        if print_verbose:
           print '--[TRANSMISSION START FOUND]-[' + pre_header + ']-[' + str(i) + ']'
       
       #found end header
@@ -195,7 +226,7 @@ def extract_by_headers(pre_headers, post_headers, message):
         for curr_i in range(start_i, end_i, 8):
           n += read_byte(message, curr_i, 'c')
         
-        if print_received_transmissions:
+        if print_verbose:
           print '  ' + n
           print '--[TRANSMISSION END FOUND  ]-[' + post_header + ']-[' + str(i) + ']'
         
@@ -206,18 +237,18 @@ def extract_by_headers(pre_headers, post_headers, message):
           actual_checksum += ord(byte)
         actual_checksum = actual_checksum % 256
 
-        if print_received_transmissions:
+        if print_verbose:
           print '  Message_Checksum: ' + str(checksum)
           print '  Actual_checksum:  ' + str(actual_checksum)
         if checksum == actual_checksum:
-          if print_received_transmissions:
+          if print_verbose:
             print '  Checksum valid'
           l.append(n)
         else:
-          if print_received_transmissions:
+          if print_verbose:
             print '  Checksum invalid'
 
-        if print_received_transmissions:
+        if print_verbose:
           print ''
 
   return l

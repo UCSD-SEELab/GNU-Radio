@@ -32,6 +32,14 @@ class bladeRF_scanner(threading.Thread):
     self.bw = bw
     self.daemon = True
     self.callback = False
+    self.filewrite = False
+
+  '''[filewrite_callback]------------------------------------------------------
+    Ends thread
+  --------------------------------------------------------------------------'''
+  def filewrite_callback(self):
+    self.filewrite = True
+    #print '[rx_processor] Callback received. Writing to file'
 
   '''[end_callback]------------------------------------------------------------
     Ends thread
@@ -238,9 +246,10 @@ class bladeRF_scanner(threading.Thread):
         if self.callback:
           break
 
-        wait_start = time.time()
-        while(time.time() - wait_start < 1):
+        while not self.filewrite:
           time.sleep(0.1)
+
+        self.filewrite = False
 
         fft, curr_file_pos = self.scanner_spin(curr_file_pos)
         rssi = self.RSSI(self.cen_freq, self.bw, fft)

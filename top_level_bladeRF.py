@@ -37,16 +37,29 @@
 import bladeRF_scanner
 import blade_rx
 import gnuradio_interface
+import rx_processor
 import sys
+import time
 
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
 scan_best_freqs = False
+run_time =1000
 
 center_freq = 433920000
 bandwidth   = 1500000
 baud_rate   = 2500
+
+#receive variables
+in_file  = '_out.bin'
+fft_file = 'log_power_fft_data.bin'
+rx_process = True
+rx_new     = True
+print_received_transmissions = True
+
+pre_headers = ['SL1', 'SL2', 'SL3']
+post_headers = ['ED1', 'ED2', 'ED3']
 
 '''[main]----------------------------------------------------------------------
   Initializes gnuradio_interface and bladeRF_scanner threads, which handle
@@ -61,7 +74,11 @@ def main():
     sdr = blade_rx.blade_rf_sdr(1)
 
     gr = gnuradio_interface.gr_thread(center_freq, baud_rate)
+
     scanner = bladeRF_scanner.bladeRF_scanner()
+
+    if rx_process:
+      rx_p = rx_processor.rx_processor(pre_headers, post_headers)
 
     #get list of best frequencies
     if scan_best_freqs:
@@ -75,12 +92,32 @@ def main():
     gr.start()
     scanner.start()
 
-    gr.join(1000)
+    if rx_process:
+      rx_p.start()
+
+    start_time = time.time()
+    while time.time() - start_time < run_time:
+
+      wait_start = time.time()
+      while(time.time() - wait_start < 1):
+        time.sleep(0.1)
+
+      print '\n[main] sending filewrite sync'
+      scanner.filewrite_callback()
+      rx_p.filewrite_callback()
+
   except KeyboardInterrupt:
-    print '\n[main] Ctrl+c received. Shutting down program'
+    print '\n[main] Ctrl+c received. Ending program'
     gr.end_callback()
     scanner.end_callback()
+    rx_p.end_callback()
     sys.exit(1)
+
+  print '[main] Time reached. Ending program'
+  gr.end_callback()
+  scanner.end_callback()
+  rx_p.end_callback()
+  sys.exit(1)
 
 if __name__ == '__main__':
   main()
