@@ -9,13 +9,14 @@
                  thread to process either old or live data.
 ---*-----------------------------------------------------------------------*'''
 
+from mavlink_stuff.ardupilot import ArduPilot
 import tx_2400_r2
 import rx_2400_r2
+import rx_processor
+
+import struct
 import threading
 import time
-import struct
-import rx_processor
-from mavlink_stuff.ardupilot import ArduPilot
 
 '''----------------------------------------------------------------------------
 Config variables
@@ -35,13 +36,19 @@ rx_time  = 60
   and preventing race conditions on file accesses.
 ----------------------------------------------------------------------------'''
 class gr_thread(threading.Thread):
+
+  '''[__init__]----------------------------------------------------------------
+    Initializes gr_thread with appropriate center freq and baud rate.
+
+    cen_freq  - center frequency to rx/tx at
+    baud_rate - bitrate of writing
+  --------------------------------------------------------------------------'''
   def __init__(self, cen_freq=433920000, baud_rate=2500):
     super(gr_thread, self).__init__()
     self.cen_freq = cen_freq
     self.callback = False
     self.daemon = True
     self.baud_rate = baud_rate
-    #self.rx_m_p = rx_processor.rx_processor(self, pre_headers, post_headers)
 
   '''[end_callback]------------------------------------------------------------
     Ends thread
@@ -93,23 +100,15 @@ class gr_thread(threading.Thread):
     tx_2400_r2.main(None, None, tx_time, self.cen_freq, out_file)
 
   '''[rx]----------------------------------------------------------------------
-    Starts a rx_processor on a different thread and schedules in_file accesses
-    accordingly with the rx_processor to ensure the in_file is being utilized
-    fully and processing old samples can be done while reading new samples.
+    Receives to _out.bin, which can be accessed while it is being written to
+    by rx_processor either live or post run.
   --------------------------------------------------------------------------'''
   def rx(self):
 
     print 'Receiving on: ' + str(self.cen_freq)
 
-    #if rx_process:
-    #  self.rx_m_p.start()
-
     if rx_new:
       rx_2400_r2.main(None, None, rx_time, self.cen_freq)
-
-    #if rx_process:
-    #  self.rx_m_p.join(1000)
-
 
   '''[run]---------------------------------------------------------------------
     Starts when thread is run.
@@ -127,6 +126,7 @@ class gr_thread(threading.Thread):
   message     - message to transmit
   pre_header  - place before message
   post_header - place after message
+  return      - checksum of message
 ----------------------------------------------------------------------------'''
 def write_message(file, message, pre_header, post_header):
 

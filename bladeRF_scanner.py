@@ -9,11 +9,11 @@
                  select_usable_by_section - find usable bands to communicate on
 ---*-----------------------------------------------------------------------*'''
 
-#import scipy
+import rx_2400_r2
+
 import struct
 import threading
 import time
-import rx_2400_r2
 
 '''----------------------------------------------------------------------------
 Config variables
@@ -26,6 +26,13 @@ fft_size     = 1024
 fft_filename = 'log_power_fft_data.bin'
 
 class bladeRF_scanner(threading.Thread):
+
+  '''[__init__]----------------------------------------------------------------
+    Initializes bladeRF_scanner with appropriate center frequency and bandwidth
+
+    cen_freq - frequency that is being scanned
+    bw       - bandwidth of scanner
+  --------------------------------------------------------------------------'''
   def __init__(self, cen_freq=center_freq, bw=bandwidth):
     super(bladeRF_scanner, self).__init__()
     self.cen_freq = cen_freq
@@ -35,11 +42,10 @@ class bladeRF_scanner(threading.Thread):
     self.filewrite = False
 
   '''[filewrite_callback]------------------------------------------------------
-    Ends thread
+    Begins a spin when this is called
   --------------------------------------------------------------------------'''
   def filewrite_callback(self):
     self.filewrite = True
-    #print '[rx_processor] Callback received. Writing to file'
 
   '''[end_callback]------------------------------------------------------------
     Ends thread
@@ -149,6 +155,13 @@ class bladeRF_scanner(threading.Thread):
 
     return peak_freqs, new_pos
 
+
+  '''[scanner_spin]------------------------------------------------------------
+    Reads in latest data from file
+
+    pos    - position to begin reading from
+    return - position at current end of file
+  --------------------------------------------------------------------------'''
   def scanner_spin(self, pos):
     fft = []
     with open(fft_filename, 'rb') as f:
@@ -162,6 +175,17 @@ class bladeRF_scanner(threading.Thread):
 
       return fft, f.tell()
 
+
+  '''[RSSI]--------------------------------------------------------------------
+    Finds max value in fft data, then returns it in dB format.
+
+    fft    - fft data
+    return - max peak in fft
+
+    TODO - cen_freq and bw are not needed, but might be interesting as a way
+           of finding what freq the max peak is at, although it is almost 
+           always cen_freq
+  --------------------------------------------------------------------------'''
   def RSSI(self, cen_freq, bw, fft):
     max_val = -1000000
     for i in range(len(fft)):
@@ -179,6 +203,7 @@ class bladeRF_scanner(threading.Thread):
     max_usable - max amount of usable frequencies to return
     fft_size   - number of data points in each FFT window
     filename   - file containing the FFT data
+    return     - most usable frequencies in list, with max size max_usable
   --------------------------------------------------------------------------'''
   def select_usable_by_section(self, cen_freq, bw, section_bw=50000, max_usable=50, fft_size=2048, filename='log_power_fft_data.bin'):
     #f = scipy.fromfile(open(filename), dtype=scipy.float32)
@@ -236,6 +261,10 @@ class bladeRF_scanner(threading.Thread):
       
     return usable_freqs
 
+
+  '''[run]---------------------------------------------------------------------
+    Starts when thread is run
+  --------------------------------------------------------------------------'''
   def run(self):
     print '[scanner] Thread running'
 
@@ -255,6 +284,10 @@ class bladeRF_scanner(threading.Thread):
         rssi = self.RSSI(self.cen_freq, self.bw, fft)
         print '[scanner] RSSI: ' + str(rssi) + '\tFreq: ' + str(self.cen_freq)
         f.write(str(rssi) + '\n')
+
+#TODO for reference only, delete when the reference to this from 
+#     top_level_bladeRF.py is removed
+
 #def main():
   #gather samples
   #bladeRF_fft.main()

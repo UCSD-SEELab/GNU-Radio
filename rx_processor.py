@@ -2,19 +2,18 @@
                                                           Author: Jason Ma
                                                           Date  : Jun 07 2017
 
-    File Name  : top_level_bladeRF.py
+    File Name  : rx_processor.py
     Description: rx_processor processes the data received, including the
                  bitstream containing communication data, GPS, and anything
                  else being collected. This can be set to work on old or new
                  data.
-
 ---*-----------------------------------------------------------------------*'''
 
+from mavlink_stuff.ardupilot import ArduPilot
+
+import struct
 import threading
 import time
-import struct
-from mavlink_stuff.ardupilot import ArduPilot
-#from pymavlink import mavutil
 
 '''----------------------------------------------------------------------------
 Config variables
@@ -33,6 +32,12 @@ print_verbose = False
 ----------------------------------------------------------------------------'''
 class rx_processor(threading.Thread):
 
+  '''[__init__]----------------------------------------------------------------
+    Initializes rx_processor to look for certain headers.
+
+    pre_headers  - beginning headers
+    post_headers - ending headers
+  --------------------------------------------------------------------------'''
   def __init__(self, pre_headers = [], post_headers = []):
     super(rx_processor, self).__init__()
     self.file_pos = 0
@@ -54,11 +59,10 @@ class rx_processor(threading.Thread):
     post_h = post_headers
 
   '''[filewrite_callback]------------------------------------------------------
-    Ends thread
+    Begins a spin when this is called
   --------------------------------------------------------------------------'''
   def filewrite_callback(self):
     self.filewrite = True
-    #print '[rx_processor] Callback received. Writing to file'
 
   '''[end_callback]------------------------------------------------------------
     Ends thread
@@ -69,6 +73,9 @@ class rx_processor(threading.Thread):
 
   '''[rx_spin]-----------------------------------------------------------------
     Reads stream into a list containing bitstream for further processing later.
+
+    pos    - where to begin reading in the bitstream
+    return - current end position of bitstream
   --------------------------------------------------------------------------'''
   def rx_spin(self, pos):
     with open(bitstream_file, 'rb') as f:
@@ -88,6 +95,11 @@ class rx_processor(threading.Thread):
       #print '[rx_processor] File read complete.'
       return f.tell()
 
+  '''[get_file_pos]------------------------------------------------------------
+    Returns where in the bitstream the processor currently is.
+
+    return - point at which all previous data has been processed
+  --------------------------------------------------------------------------'''
   def get_file_pos(self):
     return self.file_pos
 
@@ -99,7 +111,6 @@ class rx_processor(threading.Thread):
     self.file_pos = 0
 
     if gps_new:
-      #gps = mavutil.mavlink_connection('udp:localhost:14550', planner_format=False, robust_parsing=True)
       gps = ArduPilot('udp:localhost:14550', 15200, True)
       gps.setDataStreams()
 
@@ -116,16 +127,16 @@ class rx_processor(threading.Thread):
           self.filewrite = False
 
           start_time = time.time() * 1000
+
           #access stream
           self.file_pos = self.rx_spin(self.file_pos)
-
-          #done accessing stream
-          self.file_busy = False
 
           print '[rx_processor] writing GPS and RSSI data'
 
           #write GPS data
           if gps_new:
+
+            #write location data
             try:
               msg = gps.getLocation()
             except Exception:
@@ -136,6 +147,7 @@ class rx_processor(threading.Thread):
             else:
               f_gps.write('nothing\n')
 
+            #write heading data
             try:
               msg = gps.getHeading()
             except Exception:
@@ -146,6 +158,7 @@ class rx_processor(threading.Thread):
             else:
               f_gps.write('nothing\n')
 
+            #write altitude data
             try:
               msg = gps.getAltitude()
             except Exception:
@@ -175,6 +188,7 @@ class rx_processor(threading.Thread):
 
   pre_headers  - headers marking beginning of message
   post_headers - headers marking end of message
+  return       - list containing extracted messages
 ----------------------------------------------------------------------------'''
 def extract_by_headers(pre_headers, post_headers, message):
   l = []
@@ -184,9 +198,10 @@ def extract_by_headers(pre_headers, post_headers, message):
   
   if pre_headers == [] or post_headers == []:
     print '[rx_processor] Warning: empty headers'
+
   #look for headers in message
 
-  #TODO this works ok for variable length headers, but look into tring each
+  #TODO this works ok for variable length headers, but look into trying each
   #header while iterating through so only have to iterate once.
   for pre_header, post_header in zip(pre_headers, post_headers):
     if print_verbose:
@@ -259,6 +274,7 @@ def extract_by_headers(pre_headers, post_headers, message):
   stream    - stream to read from
   start_ind - start index of byte
   type      - 'i' for int, 'c' for char
+  return    - either int or char representation of byte in bitstream
 ----------------------------------------------------------------------------'''
 def read_byte(stream, start_ind, type='i'):
   value = int(''.join(str(x) for x in stream[start_ind:start_ind+8]), 2)

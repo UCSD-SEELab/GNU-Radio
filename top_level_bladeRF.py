@@ -34,10 +34,11 @@
                  Wayne's FSK GNURadio modules.
 ---*-----------------------------------------------------------------------*'''
 
-import bladeRF_scanner
 import blade_rx
+import bladeRF_scanner
 import gnuradio_interface
 import rx_processor
+
 import sys
 import time
 
