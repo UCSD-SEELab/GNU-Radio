@@ -31,7 +31,14 @@ class bladeRF_scanner(threading.Thread):
     self.cen_freq = cen_freq
     self.bw = bw
     self.daemon = True
-    self.start()
+    self.callback = False
+
+  '''[end_callback]------------------------------------------------------------
+    Ends thread
+  --------------------------------------------------------------------------'''
+  def end_callback(self):
+    self.callback = True
+    print '[scanner] Callback received. Shutting down.'
 
   '''[detect_peaks]------------------------------------------------------------
     Finds peaks within fft_windows, including the DC spike of the antenna.
@@ -224,8 +231,11 @@ class bladeRF_scanner(threading.Thread):
     print '[scanner] Thread running'
 
     curr_file_pos = 0
-    with open('rssi_data', 'w') as f:
+    with open('rssi_data', 'w+') as f:
       while True:
+
+        if self.callback:
+          break
 
         wait_start = time.time()
         while(time.time() - wait_start < 1):
@@ -233,7 +243,7 @@ class bladeRF_scanner(threading.Thread):
 
         fft, curr_file_pos = self.scanner_spin(curr_file_pos)
         rssi = self.RSSI(self.cen_freq, self.bw, fft)
-        print '[scanner] RSSI: ' + str(rssi) + ' Freq: ' + str(self.cen_freq)
+        print '[scanner] RSSI: ' + str(rssi) + '\tFreq: ' + str(self.cen_freq)
         f.write(str(rssi) + '\n')
 #def main():
   #gather samples

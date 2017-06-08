@@ -9,7 +9,42 @@
 Contains utilities and tools usable with BladeRF that interface with GNURadio.
 These have been tested on both Linux and Windows platforms
 --------------------------------------------------------------------------------
+Setting up Dependencies:
 
+Windows:
+  - GNURadio binary installer
+  - Nuand BladeRF installer
+  python -m pip install pymavlink
+  python -m pip install numpy
+
+  Setting up System Environment Variables:
+  Add to PATH:
+    C:\Program Files\GNURadio-3.7\bin
+    C:\Program Files\GNURadio-3.7\lib\site-packages
+
+  Add to PYTHONPATH:
+    C:\Program Files\GNURadio-3.7\lib\site-packages
+
+Linux:
+  sudo apt-get install bladerf
+  sudo apt-get install gnuradio
+  sudo apt-get install gr-osmocom
+  sudo apt-get install numpy
+  sudo apt-get install pymavlink
 --------------------------------------------------------------------------------
+Running program:
 
+First, config the file accordingly with:
+vim bladeRF_full_duplex.py
+
+Look for Config variables under import statements, and set them based on whether
+you want to transmit, receive, looking for new samples, process samples live,
+etc. 
+
+When ready:
+- Connect appropriate antennas to connectors on bladeRF
+- Connect bladeRF to USB port
+
+Run: (assuming python is in PATH. You can also run in IDLE or whatever you use)
+python bladeRF_full_duplex.py
 --------------------------------------------------------------------------------
