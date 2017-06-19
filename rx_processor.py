@@ -129,7 +129,8 @@ class rx_processor(threading.Thread):
           start_time = time.time() * 1000
 
           #access stream
-          self.file_pos = self.rx_spin(self.file_pos)
+          if rx_process:
+            self.file_pos = self.rx_spin(self.file_pos)
 
           print '[rx_processor] writing GPS and RSSI data'
 
@@ -176,12 +177,12 @@ class rx_processor(threading.Thread):
           end_time = time.time() * 1000
 
           #process stream
-          extracted = extract_by_headers(self.pre_h, self.post_h, self.message)
-          
-          if len(extracted) > 0:
-            print '[rx_processor] Successful packet transfer!'
+          if rx_process:
+            extracted = extract_by_headers(self.pre_h, self.post_h, self.message)
+            if len(extracted) > 0:
+              print '[rx_processor] Successful packet transfer!'
 
-          print '[rx_processor] Valid Packets: ' + str(len(extracted)) + '\tTime: ' + str(end_time - start_time)
+            print '[rx_processor] Valid Packets: ' + str(len(extracted)) + '\tTime: ' + str(end_time - start_time)
 
 '''[extract_by_headers]--------------------------------------------------------
   Look for pre and post headers in bitstream, extract message if found.
@@ -210,6 +211,8 @@ def extract_by_headers(pre_headers, post_headers, message):
     start_i = 0
     end_i = 0
 
+    #TODO might be better to process stream 8 times, then search for headers in
+    #the 8 bytestreams
     for i in range(0, len(message) - 8 * len(pre_header)):
       n = ''
       #read string of characters of length of header

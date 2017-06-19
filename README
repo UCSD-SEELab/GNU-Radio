@@ -9,11 +9,13 @@
 Contains utilities and tools usable with BladeRF that interface with GNURadio.
 These have been tested on both Linux and Windows platforms
 
-                      top_level_bladeRF
-                     /                 \
-                scanner                 gnuradio_interface 
-               /                       /        |         \
-             BladeRF         rx_2400_r2      tx_2400_r2    rx_processor
+Main structure:
+
+                 .-------------top_level_bladeRF-----------.
+                /     /           |             \           \
+    rx_processor   scanner   blade_rx   gnuradio_interface   hardware
+                                       /                  \         
+                             rx_2400_r2                    tx_2400_r2  
 
 - top_level_bladeRF initializes all the other threads:
   - gnuradio_interface
@@ -31,8 +33,18 @@ These have been tested on both Linux and Windows platforms
 
 - scanner has peak detection and RSSI measuring capability.
 
+- hardware interfaces with the air quality sensor, modified slightly from 
+  Michael / Christine's code to work with top level's callbacks
+
 A good portion of this was inspired by and builds on Stephen Wayne's FSK 
 GNURadio modules.
+
+Separate utilities:
+- bladeRF_fft only performs an FFT on the signal outputted by the BladeRF for
+  use in determing RSSI or peaks. It is basically a simpler version of 
+  tx/rx_2400_r2
+
+- visualize is used for visualizing rssi and gps data using matplotlib
 --------------------------------------------------------------------------------
 Setting up Dependencies:
 
@@ -59,17 +71,50 @@ Linux:
 --------------------------------------------------------------------------------
 Running program:
 
-First, config the file accordingly with:
-vim bladeRF_full_duplex.py
+First, config the files accordingly. Generally, once it is set up, you only need
+to specify what frequency to tx/rx on and whether the device is tx/rxing. 
 
-Look for Config variables under import statements, and set them based on whether
-you want to transmit, receive, looking for new samples, process samples live,
-etc. 
+This script is usable for both tx and rx, with plans to do both simultaneously in the future. However, GNURadio was not happy with doing full duplex communications, and it results in buffer errors and crashes.
+
+The important config variables:
+top_level_bladeRF:
+- run_time allows for the program to automatically terminate after a certain
+  period of time. Does not control rx/tx times though.
+- rx_process turns the rx_processor on / off
+- air_sensor turns air sensor readings on / off
+- baud_rate not tested very well other than on 2500. Increasing can lead to 
+  bandwidth issues on platforms with low processing power (ie. raspberry pi)
+- center_freq sets frequency of tx/rx ----- VERY IMPORTANT
+
+TODO
+- in_file, fft_file, rx_new, bandwidth, and 
+  print_received_transmissions all should control appropriate config vars in
+  submodules, but do not do so yet. For now, change them in the submodules.
+
+gnuradio_interface:
+- tx whether to transmit ----- VERY IMPORTANT
+- rx whether to receive  ----- VERY IMPORTANT
+Note: always set either tx or rx to true, not both.
+
+- tx_time controls tx time
+- rx_time controls rx time
+
+rx_processor:
+- gps_new controls whether to receive new gps samples
+- rx_new controls whether to write bitstream position data
+- rx_process controls whether to process bitstream live (intensive for RPi2)
+
+bladeRF_scanner:
+- fft_size controls precision of FFT
 
 When ready:
 - Connect appropriate antennas to connectors on bladeRF
 - Connect bladeRF to USB port
+- Connect any other sensors and set their configs up accordingly
 
 Run: (assuming python is in PATH. You can also run in IDLE or whatever you use)
-python bladeRF_full_duplex.py
+python top_level_bladeRF.py
+
+To visualize received data after a flight, run:
+python visualize.py
 --------------------------------------------------------------------------------

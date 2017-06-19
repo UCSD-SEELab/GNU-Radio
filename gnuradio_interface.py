@@ -29,6 +29,7 @@ out_file = '_send.bin'
 tx_time  = 1
 
 #receive variables
+rx_new   = True
 rx_time  = 60
 
 '''[gr_thread]-----------------------------------------------------------------

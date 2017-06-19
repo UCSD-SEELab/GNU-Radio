@@ -6,11 +6,11 @@
     Description: Allows for either transmitting or receiving data using the
                  appropriate GNURadio modules and a BladeRF board. 
                  
-                          top_level_bladeRF
-                         /                 \
-                    scanner                 gnuradio_interface 
-                   /                       /        |         \
-                 BladeRF         rx_2400_r2      tx_2400_r2    rx_processor
+                 .-------------top_level_bladeRF-----------.
+                /     /           |             \           \
+    rx_processor   scanner   blade_rx   gnuradio_interface   hardware
+                                       /                  \         
+                             rx_2400_r2                    tx_2400_r2  
 
                  - top_level_bladeRF initializes all the other threads:
                    - gnuradio_interface
@@ -30,6 +30,10 @@
 
                  - scanner has peak detection and RSSI measuring capability.
 
+                 - hardware interfaces with the air quality sensor, modified 
+                   slightly from Michael / Christine's code to work with top 
+                   level's callbacks
+
                  A good portion of this was inspired by and builds on Stephen 
                  Wayne's FSK GNURadio modules.
 ---*-----------------------------------------------------------------------*'''
@@ -37,7 +41,6 @@
 import blade_rx
 import bladeRF_scanner
 import gnuradio_interface
-import rx_processor
 
 import sys
 import time
@@ -46,7 +49,7 @@ import time
 Config variables
 ----------------------------------------------------------------------------'''
 scan_best_freqs = False
-run_time =1000
+run_time =10000
 
 center_freq = 433920000
 bandwidth   = 1500000
@@ -58,9 +61,21 @@ fft_file = 'log_power_fft_data.bin'
 rx_process = True
 rx_new     = True
 print_received_transmissions = True
+air_sensor = False
 
 pre_headers = ['SL1', 'SL2', 'SL3']
 post_headers = ['ED1', 'ED2', 'ED3']
+
+
+'''----------------------------------------------------------------------------
+Conditional imports
+----------------------------------------------------------------------------'''
+
+if air_sensor:
+  import hardware
+
+if rx_process:
+  import rx_processor
 
 '''[main]----------------------------------------------------------------------
   Initializes gnuradio_interface and bladeRF_scanner threads, which handle
@@ -81,6 +96,9 @@ def main():
     if rx_process:
       rx_p = rx_processor.rx_processor(pre_headers, post_headers)
 
+    if air_sensor:
+      air_q_s = hardware.AirSensor()
+
     #get list of best frequencies
     if scan_best_freqs:
       #best_freqs = bladeRF_scanner.main()
@@ -90,11 +108,16 @@ def main():
       #take lowest interference frequency and set it to center_freq for now
       center_freq = best_freqs[0]
 
+      #do something with it
+
     gr.start()
     scanner.start()
 
     if rx_process:
       rx_p.start()
+
+    #if air_sensor:
+    #  air_q_s.start()
 
     start_time = time.time()
     while time.time() - start_time < run_time:
@@ -105,19 +128,35 @@ def main():
 
       print '\n[main] sending filewrite sync'
       scanner.filewrite_callback()
-      rx_p.filewrite_callback()
+
+      if rx_process:
+        rx_p.filewrite_callback()
+
+      if air_sensor:
+        air_q_s.filewrite_callback()
 
   except KeyboardInterrupt:
     print '\n[main] Ctrl+c received. Ending program'
     gr.end_callback()
     scanner.end_callback()
-    rx_p.end_callback()
+
+    if rx_process:
+      rx_p.end_callback()
+
+    if air_sensor:
+      air_q_s.end_callback()
     sys.exit(1)
 
   print '[main] Time reached. Ending program'
   gr.end_callback()
   scanner.end_callback()
-  rx_p.end_callback()
+
+  if rx_process:
+    rx_p.end_callback()
+
+  if air_sensor:
+      air_q_s.end_callback()
+
   sys.exit(1)
 
 if __name__ == '__main__':
