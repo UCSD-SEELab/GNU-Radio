@@ -12,10 +12,13 @@
                                        /                  \         
                              rx_2400_r2                    tx_2400_r2  
 
-                 - top_level_bladeRF initializes all the other threads:
+                 - top_level_bladeRF loads the FPGA onto the BladeRF using 
+                   blade_rx. It then begins and maintains all the other 
+                   threads:
                    - gnuradio_interface
-                     - rx_processor
+                   - rx_processor
                    - scanner
+                   - hardware
                    It allows for smooth exiting so nothing gets locked up.
 
                  - gnuradio_interface calls either rx_2400_r2 or tx_2400_r2
