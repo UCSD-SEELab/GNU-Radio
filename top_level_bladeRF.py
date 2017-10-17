@@ -145,7 +145,7 @@ else: #invalid input
 ----------------------------------------------------------------------------'''
 def main():
 
-  #global center_freq
+  global center_freq
 
   try:
     #init threads

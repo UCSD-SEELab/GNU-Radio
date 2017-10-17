@@ -40,6 +40,8 @@ class gr_thread(threading.Thread):
     self.daemon = True
     self.tx = tx
     self.rx = rx
+    self.tx_time = tx_time
+    self.rx_time = rx_time
     self.cen_freq = cen_freq
     self.bw = bw
     self.baud_rate = baud_rate
@@ -91,7 +93,7 @@ class gr_thread(threading.Thread):
     post_header = 'ED3'
     write_message(out_files[2], message3, pre_header, post_header)
 
-    tx_2400_r2.main(tx_time=tx_time, freq=self.cen_freq)
+    tx_2400_r2.main(tx_time=self.tx_time, freq=self.cen_freq)
 
   '''[rx]----------------------------------------------------------------------
     Receives to _out.bin, which can be accessed while it is being written to
@@ -101,7 +103,7 @@ class gr_thread(threading.Thread):
 
     print 'Receiving on: ' + str(self.cen_freq)
 
-    rx_2400_r2.main(rx_time=1000)
+    rx_2400_r2.main(rx_time=self.rx_time)
 
   '''[run]---------------------------------------------------------------------
     Starts when thread is run.
