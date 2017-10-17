@@ -44,6 +44,7 @@ class rx_processor(threading.Thread):
     self.gps_new = gps_new
     self.message = []
 
+    #only import ardupilot stuff if needed
     if gps_new:
       from mavlink_stuff.ardupilot import ArduPilot
 
@@ -110,7 +111,7 @@ class rx_processor(threading.Thread):
     Starts when thread is run.
   --------------------------------------------------------------------------'''
   def run(self):
-    print '[rx_processor] Thread running'
+    print '[rx_processor] Initialized'
     self.file_pos = 0
 
     if self.gps_new:
@@ -144,7 +145,7 @@ class rx_processor(threading.Thread):
             try:
               msg = gps.getLocation()
             except Exception:
-              print '[gps] exception: location'
+              print '[rx_processor] [gps] exception: location'
 
             if msg is not None:
               f_gps.write(str(msg) + '\n')
@@ -155,7 +156,7 @@ class rx_processor(threading.Thread):
             try:
               msg = gps.getHeading()
             except Exception:
-              print '[gps] exception: heading'
+              print '[rx_processor] [gps] exception: heading'
 
             if msg is not None:
               f_gps.write(str(msg) + '\n')
@@ -166,7 +167,7 @@ class rx_processor(threading.Thread):
             try:
               msg = gps.getAltitude()
             except Exception:
-              print '[gps] exception: altitude'
+              print '[rx_processor] [gps] exception: altitude'
 
             if msg is not None:
               f_gps.write(str(msg) + '\n')

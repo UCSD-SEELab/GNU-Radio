@@ -36,8 +36,8 @@ class gr_thread(threading.Thread):
   --------------------------------------------------------------------------'''
   def __init__(self, tx, rx, tx_time, rx_time, cen_freq, bw, baud_rate):
     super(gr_thread, self).__init__()
-    self.callback = False
     self.daemon = True
+    self.callback = False
     self.tx = tx
     self.rx = rx
     self.tx_time = tx_time
@@ -59,7 +59,7 @@ class gr_thread(threading.Thread):
     program termination.
   --------------------------------------------------------------------------'''
   def tx_new(self):
-    print 'Transmitting on: ' + str(self.cen_freq)
+    print '[gr_thread] Transmitting on: ' + str(self.cen_freq)
 
     out_files = []
     out_files.append('_send1.bin')
@@ -101,7 +101,7 @@ class gr_thread(threading.Thread):
   --------------------------------------------------------------------------'''
   def rx_new(self):
 
-    print 'Receiving on: ' + str(self.cen_freq)
+    print '[gr_thread] Receiving on: ' + str(self.cen_freq)
 
     rx_2400_r2.main(rx_time=self.rx_time)
 
@@ -109,6 +109,7 @@ class gr_thread(threading.Thread):
     Starts when thread is run.
   --------------------------------------------------------------------------'''
   def run(self):
+    print '[gr_thread] Initialized'
     if self.tx:
       self.tx_new()
     elif self.rx:
@@ -134,7 +135,7 @@ def write_message(file, message, pre_header, post_header):
 
   checksum = checksum % 256
 
-  print '[write_message]-[' + str(checksum) + ']'
+  print '[gr_thread] [write_message]-[' + str(checksum) + ']'
   print ba
   print ''
 

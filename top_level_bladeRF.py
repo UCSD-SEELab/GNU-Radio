@@ -59,10 +59,6 @@ center_freq = 433920000
 bandwidth   = 1500000 #TODO currently NOT being used by gnuradio_interface effectively
 baud_rate   = 2500 #TODO currently NOT being used by gnuradio_interface effectively
 
-#receive variables
-in_file  = '_out.bin'
-fft_file = 'log_power_fft_data.bin'
-
 #gnuradio_interface parameters
 tx = False
 rx = True
@@ -74,18 +70,20 @@ rx_process = True
 gps_tagging = False
 pre_headers = ['SL1', 'SL2', 'SL3']
 post_headers = ['ED1', 'ED2', 'ED3']
+in_file  = '_out.bin'
 
 #scanner parameters
 scan = False
 scan_best_freqs = False
 section_bw = 50000
 fft_size = 4096
+fft_file = 'log_power_fft_data.bin'
 
 #hardware parameters
 air_sensor = False
 
 '''----------------------------------------------------------------------------
-Conditional imports
+Conditional imports and settings
 ----------------------------------------------------------------------------'''
 
 if air_sensor:
@@ -162,9 +160,12 @@ def main():
 
   try:
     #init threads
-    print '[main] tx: ' + str(tx)
-    print '[main] rx: ' + str(rx)
-    print '[main] rx_process: ' + str(rx_process)
+    print '[main] Tx:\t' + str(tx)
+    print '[main] Rx:\t' + str(rx)
+    print '[main] Rx_proc:\t' + str(rx_process)
+    print '[main] Scanner:\t' + str(scan)
+    print '[main] Aq_sen:\t' + str(air_sensor)
+    print '\n'
 
     threads = []
     filewrite_subscribers = []
@@ -230,7 +231,7 @@ def main():
     print '\n[main] Ctrl+c received.'
     end_all_threads(threads)
 
-  print '[main] Time reached.'
+  print '\n[main] Time reached.'
   end_all_threads()
 
 if __name__ == '__main__':

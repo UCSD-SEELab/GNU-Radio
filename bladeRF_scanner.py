@@ -257,7 +257,7 @@ class bladeRF_scanner(threading.Thread):
     Starts when thread is run
   --------------------------------------------------------------------------'''
   def run(self):
-    print '[scanner] Thread running'
+    print '[scanner] Initialized'
 
     curr_file_pos = 0
     with open('rssi_data', 'w+') as f:
