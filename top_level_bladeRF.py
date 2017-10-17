@@ -139,6 +139,17 @@ else: #invalid input
         \tm    - manual selection\n")
   sys.exit(1)
 
+'''[end_all_threads]-----------------------------------------------------------
+  Sends an end_callback to all threads in thread list
+----------------------------------------------------------------------------'''
+def end_all_threads(threads):
+  print '[main] Ending program.'
+
+  for thread in threads:
+    thread.end_callback()
+
+  sys.exit(1)
+
 '''[main]----------------------------------------------------------------------
   Initializes gnuradio_interface and bladeRF_scanner threads, which handle
   data collection and processing independently.
@@ -213,46 +224,12 @@ def main():
       for thread in filewrite_subscribers:
         thread.filewrite_callback()
       
-      '''
-      if scan:
-        scanner.filewrite_callback()
-
-      if rx_process:
-        rx_p.filewrite_callback()
-
-      if air_sensor:
-        air_q_s.filewrite_callback()
-      '''
-
   except KeyboardInterrupt:
     print '\n[main] Ctrl+c received.'
     end_all_threads(threads)
 
   print '[main] Time reached.'
   end_all_threads()
-
-def end_all_threads(threads):
-  print '[main] Ending program.'
-
-  for thread in threads:
-    thread.end_callback()
-
-  '''
-  if tx or rx:
-    gr.end_callback()
-  
-  if scan:
-    scanner.end_callback()
-
-  if rx_process:
-    rx_p.end_callback()
-
-  if air_sensor:
-    air_q_s.end_callback()
-  '''
-
-  sys.exit(1)
-
 
 if __name__ == '__main__':
   main()
