@@ -51,24 +51,36 @@ import time
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-scan_best_freqs = False
-run_time =10000
+
+#top_level_bladeRF config
+run_time = 10000
 
 center_freq = 433920000
-bandwidth   = 1500000
-baud_rate   = 2500
+bandwidth   = 1500000 #TODO currently NOT being used by gnuradio_interface effectively
+baud_rate   = 2500 #TODO currently NOT being used by gnuradio_interface effectively
 
 #receive variables
 in_file  = '_out.bin'
 fft_file = 'log_power_fft_data.bin'
-rx_process = True
-rx_new     = True
-print_received_transmissions = True
-air_sensor = False
 
+#gnuradio_interface parameters
+tx = False
+rx = True
+tx_time = 10000
+rx_time = 10000
+
+#rx_processor parameters
+rx_process = True
+gps_tagging = False
 pre_headers = ['SL1', 'SL2', 'SL3']
 post_headers = ['ED1', 'ED2', 'ED3']
 
+#scanner parameters
+scan = False
+scan_best_freqs = False
+
+#hardware parameters
+air_sensor = False
 
 '''----------------------------------------------------------------------------
 Conditional imports
@@ -80,24 +92,81 @@ if air_sensor:
 if rx_process:
   import rx_processor
 
+if len(sys.argv) < 2:
+  print("Usage: python top_level_bladeRF [f] | [tx] | [rx] | [rxnp] | [p] | [m]\n \
+        \tf    - full duplex (both tx and rx)\n \
+        \ttx   - transmit new samples\n \
+        \trx   - receive new samples\n \
+        \trxnp - receive, but do not process samples\n \
+        \tp    - process pre-received samples from in_file\n \
+        \tm    - manual selection\n")
+  sys.exit(1)
+
+if sys.argv[1] == 'f': #full duplex
+  print '[main] Mode: Full Duplex'
+  tx = True
+  rx = True
+  rx_process = True
+elif sys.argv[1] == 'tx': #tx only
+  print '[main] Mode: TX'
+  tx = True
+  rx = False
+  rx_process = False
+elif sys.argv[1] == 'rx': #rx only
+  print '[main] Mode: RX'
+  tx = False
+  rx = True
+  rx_process = True
+elif sys.argv[1] == 'rxnp': #rx samples without processing
+  print '[main] Mode: RX without processing'
+  tx = False
+  rx = True
+  rx_process = False
+elif sys.argv[1] == 'p': #process only
+  print '[main] Mode: Processing only'
+  tx = False
+  rx = False
+  rx_process = True
+elif sys.argv[1] == 'm': #manual mode
+  print '[main] Mode: Manual'
+else: #invalid input
+  print("Usage: python top_level_bladeRF [f] | [tx] | [rx] | [rxnp] | [p] | [m]\n \
+        \tf    - full duplex (both tx and rx)\n \
+        \ttx   - transmit new samples\n \
+        \trx   - receive new samples\n \
+        \trxnp - receive, but do not process samples\n \
+        \tp    - process pre-received samples from in_file\n \
+        \tm    - manual selection\n")
+  sys.exit(1)
+
 '''[main]----------------------------------------------------------------------
   Initializes gnuradio_interface and bladeRF_scanner threads, which handle
   data collection and processing independently.
 ----------------------------------------------------------------------------'''
 def main():
 
-  global center_freq
+  #global center_freq
 
   try:
+    #init threads
+    print '[main] tx: ' + str(tx)
+    print '[main] rx: ' + str(rx)
+    print '[main] rx_process: ' + str(rx_process)
+
+    threads = []
+    filewrite_subscribers = []
+
     #loads fpga
-    sdr = blade_rx.blade_rf_sdr(1)
+    if tx or rx:
+      sdr = blade_rx.blade_rf_sdr(1)
 
-    gr = gnuradio_interface.gr_thread(center_freq, baud_rate)
-
-    scanner = bladeRF_scanner.bladeRF_scanner()
+      gr = gnuradio_interface.gr_thread(tx, rx, tx_time, rx_time, center_freq, bandwidth, baud_rate)
+    
+    if scan:
+      scanner = bladeRF_scanner.bladeRF_scanner()
 
     if rx_process:
-      rx_p = rx_processor.rx_processor(pre_headers, post_headers)
+      rx_p = rx_processor.rx_processor(pre_headers, post_headers, rx, gps_tagging)
 
     if air_sensor:
       air_q_s = hardware.AirSensor()
@@ -113,14 +182,24 @@ def main():
 
       #do something with it
 
-    gr.start()
-    scanner.start()
+    if tx or rx:
+      gr.start()
+      threads.append(gr)
+
+    if scan:
+      scanner.start()
+      threads.append(scanner)
+      filewrite_subscribers.append(scanner)
 
     if rx_process:
       rx_p.start()
+      threads.append(rx_p)
+      filewrite_subscribers.append(rx_p)
 
     #if air_sensor:
     #  air_q_s.start()
+    #  threads.append(air_q_s)
+    #  filewrite_subscribers.append(air_q_s)
 
     start_time = time.time()
     while time.time() - start_time < run_time:
@@ -130,37 +209,50 @@ def main():
         time.sleep(0.1)
 
       print '\n[main] sending filewrite sync'
-      scanner.filewrite_callback()
+
+      for thread in filewrite_subscribers:
+        thread.filewrite_callback()
+      
+      '''
+      if scan:
+        scanner.filewrite_callback()
 
       if rx_process:
         rx_p.filewrite_callback()
 
       if air_sensor:
         air_q_s.filewrite_callback()
+      '''
 
   except KeyboardInterrupt:
-    print '\n[main] Ctrl+c received. Ending program'
+    print '\n[main] Ctrl+c received.'
+    end_all_threads(threads)
+
+  print '[main] Time reached.'
+  end_all_threads()
+
+def end_all_threads(threads):
+  print '[main] Ending program.'
+
+  for thread in threads:
+    thread.end_callback()
+
+  '''
+  if tx or rx:
     gr.end_callback()
+  
+  if scan:
     scanner.end_callback()
-
-    if rx_process:
-      rx_p.end_callback()
-
-    if air_sensor:
-      air_q_s.end_callback()
-    sys.exit(1)
-
-  print '[main] Time reached. Ending program'
-  gr.end_callback()
-  scanner.end_callback()
 
   if rx_process:
     rx_p.end_callback()
 
   if air_sensor:
-      air_q_s.end_callback()
+    air_q_s.end_callback()
+  '''
 
   sys.exit(1)
+
 
 if __name__ == '__main__':
   main()

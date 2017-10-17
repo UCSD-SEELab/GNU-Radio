@@ -9,8 +9,6 @@
                  data.
 ---*-----------------------------------------------------------------------*'''
 
-from mavlink_stuff.ardupilot import ArduPilot
-
 import struct
 import threading
 import time
@@ -19,11 +17,7 @@ import time
 Config variables
 ----------------------------------------------------------------------------'''
 bitstream_file  = '_out.bin'
-gps_new = True
-rx_new = True
-rx_process = True
-rx_time = 60
-print_verbose = False
+print_verbose = True
 
 '''[rx_processor]--------------------------------------------------------------
   Reads in and processes received samples. Reading in is done on a callback
@@ -38,15 +32,20 @@ class rx_processor(threading.Thread):
     pre_headers  - beginning headers
     post_headers - ending headers
   --------------------------------------------------------------------------'''
-  def __init__(self, pre_headers = [], post_headers = []):
+  def __init__(self, pre_headers, post_headers, rx_new, gps_new):
     super(rx_processor, self).__init__()
+    self.daemon = True
+    self.callback = False
+    self.filewrite = False
     self.file_pos = 0
     self.pre_h = pre_headers
     self.post_h = post_headers
+    self.rx_new = rx_new
+    self.gps_new = gps_new
     self.message = []
-    self.callback = False
-    self.daemon = True
-    self.filewrite = False
+
+    if gps_new:
+      from mavlink_stuff.ardupilot import ArduPilot
 
   '''[update_headers]----------------------------------------------------------
     Updates the headers being looked for
@@ -83,6 +82,10 @@ class rx_processor(threading.Thread):
 
       stuff = f.read(1)
       
+      if stuff == '':
+        print '[rx_processor] EOF found'
+        return f.tell()
+
       l = []
       while stuff != "":
         l.append(struct.unpack('B', stuff)[0])
@@ -110,7 +113,8 @@ class rx_processor(threading.Thread):
     print '[rx_processor] Thread running'
     self.file_pos = 0
 
-    if gps_new:
+    if self.gps_new:
+      print '[rx_processor] Initializing GPS'
       gps = ArduPilot('udp:localhost:14550', 15200, True)
       gps.setDataStreams()
 
@@ -129,13 +133,12 @@ class rx_processor(threading.Thread):
           start_time = time.time() * 1000
 
           #access stream
-          if rx_process:
-            self.file_pos = self.rx_spin(self.file_pos)
-
-          print '[rx_processor] writing GPS and RSSI data'
+          previous_pos = self.file_pos
+          self.file_pos = self.rx_spin(self.file_pos)
 
           #write GPS data
-          if gps_new:
+          if self.gps_new:
+            print '[rx_processor] writing GPS and RSSI data'
 
             #write location data
             try:
@@ -171,18 +174,21 @@ class rx_processor(threading.Thread):
               f_gps.write('nothing\n')
 
           #write bitstream pos data
-          if rx_new:
+          if self.rx_new:
             f_bs.write(str(self.file_pos) + '\n')
 
           end_time = time.time() * 1000
 
-          #process stream
-          if rx_process:
-            extracted = extract_by_headers(self.pre_h, self.post_h, self.message)
-            if len(extracted) > 0:
-              print '[rx_processor] Successful packet transfer!'
+          if self.file_pos == previous_pos:
+            print '[rx_processor] No new data in bitstream'
+            continue
 
-            print '[rx_processor] Valid Packets: ' + str(len(extracted)) + '\tTime: ' + str(end_time - start_time)
+          #process stream
+          extracted = extract_by_headers(self.pre_h, self.post_h, self.message)
+          if len(extracted) > 0:
+            print '[rx_processor] Successful packet transfer!'
+
+          print '[rx_processor] Valid Packets: ' + str(len(extracted)) + '\tTime: ' + str(end_time - start_time)
 
 '''[extract_by_headers]--------------------------------------------------------
   Look for pre and post headers in bitstream, extract message if found.
@@ -200,13 +206,19 @@ def extract_by_headers(pre_headers, post_headers, message):
   if pre_headers == [] or post_headers == []:
     print '[rx_processor] Warning: empty headers'
 
+  if message == []:
+    print '[rx_processor] Empty message detected.'
+    return
+
+  print '[rx_processor] Message length: ' + str(len(message))
+
   #look for headers in message
 
   #TODO this works ok for variable length headers, but look into trying each
   #header while iterating through so only have to iterate once.
   for pre_header, post_header in zip(pre_headers, post_headers):
     if print_verbose:
-      print 'Looking for:', pre_header, post_header
+      print '[rx_processor] Looking for:', pre_header, post_header
     
     start_i = 0
     end_i = 0

@@ -9,10 +9,8 @@
                  thread to process either old or live data.
 ---*-----------------------------------------------------------------------*'''
 
-from mavlink_stuff.ardupilot import ArduPilot
 import tx_2400_r2
 import rx_2400_r2
-import rx_processor
 
 import struct
 import threading
@@ -21,16 +19,8 @@ import time
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-tx = True
-rx = False
-
 #transmit variables
 out_file = '_send.bin'
-tx_time  = 1
-
-#receive variables
-rx_new   = True
-rx_time  = 60
 
 '''[gr_thread]-----------------------------------------------------------------
   Gnuradio interface which allows for callbacks to be made, parallelizing work
@@ -44,11 +34,14 @@ class gr_thread(threading.Thread):
     cen_freq  - center frequency to rx/tx at
     baud_rate - bitrate of writing
   --------------------------------------------------------------------------'''
-  def __init__(self, cen_freq=433920000, baud_rate=2500):
+  def __init__(self, tx, rx, tx_time, rx_time, cen_freq, bw, baud_rate):
     super(gr_thread, self).__init__()
-    self.cen_freq = cen_freq
     self.callback = False
     self.daemon = True
+    self.tx = tx
+    self.rx = rx
+    self.cen_freq = cen_freq
+    self.bw = bw
     self.baud_rate = baud_rate
 
   '''[end_callback]------------------------------------------------------------
@@ -63,7 +56,7 @@ class gr_thread(threading.Thread):
     Writes predefined messages to out_file, then transmits continuously until 
     program termination.
   --------------------------------------------------------------------------'''
-  def tx(self):
+  def tx_new(self):
     print 'Transmitting on: ' + str(self.cen_freq)
 
     out_files = []
@@ -73,7 +66,7 @@ class gr_thread(threading.Thread):
 
     #length 256 message
     message1 = [x for x in range(255)]
-
+    #message1 = '?'
     #length 75 message
     message2 = []
     for i in range(1):
@@ -98,27 +91,26 @@ class gr_thread(threading.Thread):
     post_header = 'ED3'
     write_message(out_files[2], message3, pre_header, post_header)
 
-    tx_2400_r2.main(None, None, tx_time, self.cen_freq, out_file)
+    tx_2400_r2.main(tx_time=tx_time, freq=self.cen_freq)
 
   '''[rx]----------------------------------------------------------------------
     Receives to _out.bin, which can be accessed while it is being written to
     by rx_processor either live or post run.
   --------------------------------------------------------------------------'''
-  def rx(self):
+  def rx_new(self):
 
     print 'Receiving on: ' + str(self.cen_freq)
 
-    if rx_new:
-      rx_2400_r2.main(None, None, rx_time, self.cen_freq)
+    rx_2400_r2.main(rx_time=1000)
 
   '''[run]---------------------------------------------------------------------
     Starts when thread is run.
   --------------------------------------------------------------------------'''
   def run(self):
-    if tx:
-      self.tx()
-    elif rx:
-      self.rx()
+    if self.tx:
+      self.tx_new()
+    elif self.rx:
+      self.rx_new()
 
 '''[write_message]-------------------------------------------------------------
   Write message to bin file

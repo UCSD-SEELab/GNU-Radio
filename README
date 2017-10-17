@@ -55,6 +55,7 @@ Windows:
   - Nuand BladeRF installer
   python -m pip install pymavlink
   python -m pip install numpy
+  python -m pip install pyserial
 
   Setting up System Environment Variables:
   Add to PATH:
@@ -67,7 +68,7 @@ Windows:
 Linux:
   sudo apt-get install bladerf
   sudo apt-get install gnuradio
-  sudo apt-get install gr-osmocom
+  sudo apt-get install gr-osmocom or is it sudo apt-get install gr-osmosdr
   sudo apt-get install numpy
   sudo apt-get install pymavlink
 --------------------------------------------------------------------------------
