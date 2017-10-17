@@ -9,8 +9,6 @@
                  select_usable_by_section - find usable bands to communicate on
 ---*-----------------------------------------------------------------------*'''
 
-import rx_2400_r2
-
 import struct
 import threading
 import time
@@ -18,12 +16,7 @@ import time
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-center_freq  = 433920000
-bandwidth    = 1500000
-section_bw   = 50000
 max_usable   = 50
-fft_size     = 1024
-fft_filename = 'log_power_fft_data.bin'
 
 class bladeRF_scanner(threading.Thread):
 
@@ -33,13 +26,16 @@ class bladeRF_scanner(threading.Thread):
     cen_freq - frequency that is being scanned
     bw       - bandwidth of scanner
   --------------------------------------------------------------------------'''
-  def __init__(self, cen_freq=center_freq, bw=bandwidth):
+  def __init__(self, fft_filename, cen_freq, bw, section_bw, fft_size):
     super(bladeRF_scanner, self).__init__()
-    self.cen_freq = cen_freq
-    self.bw = bw
     self.daemon = True
     self.callback = False
     self.filewrite = False
+    self.fft_filename = fft_filename
+    self.cen_freq = cen_freq
+    self.bw = bw
+    self.section_bw = section_bw
+    self.fft_size = fft_size
 
   '''[filewrite_callback]------------------------------------------------------
     Begins a spin when this is called
@@ -57,21 +53,16 @@ class bladeRF_scanner(threading.Thread):
   '''[detect_peaks]------------------------------------------------------------
     Finds peaks within fft_windows, including the DC spike of the antenna.
 
-    cen_freq   - center frequency
-    bw         - bandwidth
-    section_bw - width of each section
     max_peaks  - max amount of peaks to return
-    fft_size   - number of data points in each FFT window
-    filename   - file containing the FFT data
     pos        - position to start at in file
     return     - vector containing peaks of the data
   --------------------------------------------------------------------------'''
-  def detect_peaks(self, cen_freq, bw, max_peaks, fft_size, filename, pos):
+  def detect_peaks(self, max_peaks, pos):
     
-    #f = scipy.fromfile(open(filename), dtype=scipy.float32)
+    #f = scipy.fromfile(open(self.filename), dtype=scipy.float32)
     
     f = []
-    with open(filename, 'rb') as file:
+    with open(self.fft_filename, 'rb') as file:
       file.seek(pos)
       flt = file.read(4)
       while flt:
@@ -83,28 +74,28 @@ class bladeRF_scanner(threading.Thread):
 
     print len(f)
 
-    peak_counts = [0] * fft_size
+    peak_counts = [0] * self.fft_size
 
     #iterate one fft at a time and find peaks
-    for i in range(len(f) / fft_size):
-      sub_f = f[i * fft_size : (i + 1) * fft_size]
+    for i in range(len(f) / self.fft_size):
+      sub_f = f[i * self.fft_size : (i + 1) * self.fft_size]
       
       #calc average db as a general cutoff
       total_db = 0
-      for j in range(fft_size):
+      for j in range(self.fft_size):
         total_db += sub_f[j]
 
-      avg_db = total_db / fft_size
+      avg_db = total_db / self.fft_size
 
       #print avg_db
 
       #find peaks
       peaks = []
-      for j in range(fft_size):
+      for j in range(self.fft_size):
         if sub_f[j] > avg_db:
           #find local max
           #TODO could look more like 10-50 points on either side
-          while j + 1 < fft_size and sub_f[j + 1] > sub_f[j]:
+          while j + 1 < self.fft_size and sub_f[j + 1] > sub_f[j]:
             j += 1
 
           while j - 1 >= 0 and sub_f[j - 1] > sub_f[j]:
@@ -112,7 +103,7 @@ class bladeRF_scanner(threading.Thread):
 
 
           #prevent duplicates, DC spike from getting added
-          #if (sub_f[j], j) not in peaks and j != 0 and j != fft_size - 1:
+          #if (sub_f[j], j) not in peaks and j != 0 and j != self.fft_size - 1:
 
           #prevent duplicates, keep DC spike
           if (sub_f[j], j) not in peaks:
@@ -128,14 +119,14 @@ class bladeRF_scanner(threading.Thread):
     
     #find average overall peak counts
     total_count = 0
-    for i in range(fft_size):
+    for i in range(self.fft_size):
       total_count += peak_counts[i]
 
-    avg_count = total_count / fft_size
+    avg_count = total_count / self.fft_size
 
     #find all frequencies where peak counts exceeded average
     all_peaks = []
-    for i in range(fft_size):
+    for i in range(self.fft_size):
       if peak_counts[i] > avg_count:
         all_peaks.append(i)
 
@@ -144,11 +135,11 @@ class bladeRF_scanner(threading.Thread):
 
     #add all these frequencies
     peak_freqs = []
-    for i in range(fft_size):
+    for i in range(self.fft_size):
       if i in all_peaks:
-        peak_freqs.append(cen_freq - (bw / 2) + (bw * i / fft_size))
+        peak_freqs.append(self.cen_freq - (self.bw / 2) + (self.bw * i / self.fft_size))
 
-    #for i in range(fft_size):
+    #for i in range(self.fft_size):
       #print peak_counts[i]
 
     #print peak_freqs
@@ -164,7 +155,7 @@ class bladeRF_scanner(threading.Thread):
   --------------------------------------------------------------------------'''
   def scanner_spin(self, pos):
     fft = []
-    with open(fft_filename, 'rb') as f:
+    with open(self.fft_filename, 'rb') as f:
       f.seek(pos)
       float_val = f.read(4)
       while float_val:
@@ -186,7 +177,7 @@ class bladeRF_scanner(threading.Thread):
            of finding what freq the max peak is at, although it is almost 
            always cen_freq
   --------------------------------------------------------------------------'''
-  def RSSI(self, cen_freq, bw, fft):
+  def RSSI(self, fft):
     max_val = -1000000
     for i in range(len(fft)):
       if fft[i] > max_val:
@@ -205,11 +196,11 @@ class bladeRF_scanner(threading.Thread):
     filename   - file containing the FFT data
     return     - most usable frequencies in list, with max size max_usable
   --------------------------------------------------------------------------'''
-  def select_usable_by_section(self, cen_freq, bw, section_bw=50000, max_usable=50, fft_size=2048, filename='log_power_fft_data.bin'):
+  def select_usable_by_section(self):
     #f = scipy.fromfile(open(filename), dtype=scipy.float32)
       
     f = []
-    with open(filename, 'rb') as file:
+    with open(self.fft_filename, 'rb') as file:
       flt = file.read(4)
       while flt:
         f.append(struct.unpack('f', flt)[0])
@@ -220,19 +211,19 @@ class bladeRF_scanner(threading.Thread):
     
     section_counts = []
 
-    for i in range(bw / section_bw):
+    for i in range(self.bw / self.section_bw):
       section_counts.append(0)
 
     #iterate one fft at a time and find max power on each section
-    for i in range(len(f) / fft_size):
-      sub_f = f[i * fft_size : (i + 1) * fft_size]
+    for i in range(len(f) / self.fft_size):
+      sub_f = f[i * self.fft_size : (i + 1) * self.fft_size]
       
       #iterate through each section
       for j in range(len(section_counts)):
         section_max = -1000000
 
         #iterate through all fft points that correspond to section, find max
-        for k in range(j * fft_size / len(section_counts), (j + 1) * fft_size / len(section_counts)):
+        for k in range(j * self.fft_size / len(section_counts), (j + 1) * self.fft_size / len(section_counts)):
           if sub_f[k] > section_max:
             section_max = sub_f[k]
         
@@ -249,7 +240,7 @@ class bladeRF_scanner(threading.Thread):
     usable_pairs = []
     for i in range(len(section_counts)):
       if section_counts[i] < avg_count:
-        usable_pairs.append((section_counts[i], cen_freq - (bw / 2) + i * section_bw))
+        usable_pairs.append((section_counts[i], self.cen_freq - (self.bw / 2) + i * self.section_bw))
 
     #sort the pairs by power and filter out the weakest frequencies
     usable_pairs = sorted(usable_pairs)[:max_usable]
@@ -281,9 +272,12 @@ class bladeRF_scanner(threading.Thread):
         self.filewrite = False
 
         fft, curr_file_pos = self.scanner_spin(curr_file_pos)
-        rssi = self.RSSI(self.cen_freq, self.bw, fft)
+        rssi = self.RSSI(fft)
         print '[scanner] RSSI: ' + str(rssi) + '\tFreq: ' + str(self.cen_freq)
         f.write(str(rssi) + '\n')
+
+        #self.select_usable_by_section()
+        #self.detect_peaks(50, curr_file_pos)
 
 #TODO for reference only, delete when the reference to this from 
 #     top_level_bladeRF.py is removed

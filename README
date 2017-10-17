@@ -52,7 +52,7 @@ Setting up Dependencies:
 
 Windows:
   - GNURadio binary installer
-  - Nuand BladeRF installer
+  - Nuand BladeRF installer    Currently does not work, need to install from source
   python -m pip install pymavlink
   python -m pip install numpy
   python -m pip install pyserial
@@ -68,7 +68,7 @@ Windows:
 Linux:
   sudo apt-get install bladerf
   sudo apt-get install gnuradio
-  sudo apt-get install gr-osmocom or is it sudo apt-get install gr-osmosdr
+  sudo apt-get install gr-osmosdr
   sudo apt-get install numpy
   sudo apt-get install pymavlink
 --------------------------------------------------------------------------------
@@ -81,8 +81,8 @@ This script is usable for both tx and rx, with plans to do both simultaneously i
 
 The important config variables:
 top_level_bladeRF:
-- run_time allows for the program to automatically terminate after a certain
-  period of time. Does not control rx/tx times though.
+- run_time automatically terminates program after a certain period of time. Does 
+  not control rx/tx times though.
 - rx_process turns the rx_processor on / off
 - air_sensor turns air sensor readings on / off
 - baud_rate not tested very well other than on 2500. Increasing can lead to 
@@ -90,7 +90,7 @@ top_level_bladeRF:
 - center_freq sets frequency of tx/rx ----- VERY IMPORTANT
 
 TODO
-- in_file, fft_file, rx_new, bandwidth, and 
+- fft_file, and 
   print_received_transmissions all should control appropriate config vars in
   submodules, but do not do so yet. For now, change them in the submodules.
 

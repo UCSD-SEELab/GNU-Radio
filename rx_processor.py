@@ -16,7 +16,6 @@ import time
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
-bitstream_file  = '_out.bin'
 print_verbose = True
 
 '''[rx_processor]--------------------------------------------------------------
@@ -32,12 +31,13 @@ class rx_processor(threading.Thread):
     pre_headers  - beginning headers
     post_headers - ending headers
   --------------------------------------------------------------------------'''
-  def __init__(self, pre_headers, post_headers, rx_new, gps_new):
+  def __init__(self, in_file, pre_headers, post_headers, rx_new, gps_new):
     super(rx_processor, self).__init__()
     self.daemon = True
     self.callback = False
     self.filewrite = False
     self.file_pos = 0
+    self.in_file = in_file
     self.pre_h = pre_headers
     self.post_h = post_headers
     self.rx_new = rx_new
@@ -77,7 +77,7 @@ class rx_processor(threading.Thread):
     return - current end position of bitstream
   --------------------------------------------------------------------------'''
   def rx_spin(self, pos):
-    with open(bitstream_file, 'rb') as f:
+    with open(self.in_file, 'rb') as f:
       f.seek(pos)
 
       stuff = f.read(1)

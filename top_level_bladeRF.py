@@ -78,6 +78,8 @@ post_headers = ['ED1', 'ED2', 'ED3']
 #scanner parameters
 scan = False
 scan_best_freqs = False
+section_bw = 50000
+fft_size = 4096
 
 #hardware parameters
 air_sensor = False
@@ -174,10 +176,10 @@ def main():
       gr = gnuradio_interface.gr_thread(tx, rx, tx_time, rx_time, center_freq, bandwidth, baud_rate)
     
     if scan:
-      scanner = bladeRF_scanner.bladeRF_scanner()
+      scanner = bladeRF_scanner.bladeRF_scanner(fft_file, center_freq, bandwidth, section_bw, fft_size)
 
     if rx_process:
-      rx_p = rx_processor.rx_processor(pre_headers, post_headers, rx, gps_tagging)
+      rx_p = rx_processor.rx_processor(in_file, pre_headers, post_headers, rx, gps_tagging)
 
     if air_sensor:
       air_q_s = hardware.AirSensor()
@@ -186,7 +188,7 @@ def main():
     if scan_best_freqs:
       #best_freqs = bladeRF_scanner.main()
       #TODO need to fix above line, main is deprecated
-      best_freqs = scanner.select_usable_by_section(center_freq, bandwidth)
+      best_freqs = scanner.select_usable_by_section()
 
       #take lowest interference frequency and set it to center_freq for now
       center_freq = best_freqs[0]
