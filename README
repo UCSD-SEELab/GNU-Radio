@@ -11,11 +11,16 @@ These have been tested on both Linux and Windows platforms
 
 Main structure:
 
-                 .-------------top_level_bladeRF-----------.
-                /     /           |             \           \
-    rx_processor   scanner   blade_rx   gnuradio_interface   hardware
-                                       /                  \         
-                             rx_2400_r2                    tx_2400_r2  
+             .-------------top_level_bladeRF-----------.
+            /     /           |             \           \
+rx_processor   scanner   blade_rx   gnuradio_interface  .--------------------.
+                                             |          | Additional Sensors |
+                      .--------------------------.      |                    |
+                      | GNURadio Generated Files |      | hardware           |
+                      |                          |      |____________________|
+                      | rx_2400_r2               |         
+                      | tx_2400_r2               |
+                      |__________________________|
 
 - top_level_bladeRF loads the FPGA onto the BladeRF using blade_rx. It then 
   begins and maintains all the other threads:
@@ -27,7 +32,10 @@ Main structure:
 
 - gnuradio_interface calls either rx_2400_r2 or tx_2400_r2 depending on 
   configuration to either receive or transmit data using FSK modulation. It 
-  also starts a rx_processor thread to process either old or live data.
+  also starts a rx_processor thread to process either old or live data. The
+  idea behind this file is to make it modular, being capable of calling any
+  gnuradio generated files that write to the appropriate file and implement
+  the main call.
 
 - rx_processor processes the data received, including the bitstream containing
   communication data, GPS, and anything else being collected. This can be set 
@@ -52,7 +60,7 @@ Setting up Dependencies:
 
 Windows:
   - GNURadio binary installer
-  - Nuand BladeRF installer    Currently does not work, need to install from source
+  - Nuand BladeRF installer    Currently does not work on newest windows 10, need to install from source
   python -m pip install pymavlink
   python -m pip install numpy
   python -m pip install pyserial

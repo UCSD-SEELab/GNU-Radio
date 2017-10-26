@@ -9,8 +9,8 @@
                  thread to process either old or live data.
 ---*-----------------------------------------------------------------------*'''
 
-import tx_2400_r2
-import rx_2400_r2
+import gr_modules.tx_2400_r2 as gr_tx
+import gr_modules.rx_2400_r2 as gr_rx
 
 import struct
 import threading
@@ -20,7 +20,7 @@ import time
 Config variables
 ----------------------------------------------------------------------------'''
 #transmit variables
-out_file = '_send.bin'
+out_file = 'io/_send.bin'
 
 '''[gr_thread]-----------------------------------------------------------------
   Gnuradio interface which allows for callbacks to be made, parallelizing work
@@ -62,9 +62,9 @@ class gr_thread(threading.Thread):
     print '[gr_thread] Transmitting on: ' + str(self.cen_freq)
 
     out_files = []
-    out_files.append('_send1.bin')
-    out_files.append('_send2.bin')
-    out_files.append('_send.bin')
+    out_files.append('io/_send1.bin')
+    out_files.append('io/_send2.bin')
+    out_files.append('io/_send.bin')
 
     #length 256 message
     message1 = [x for x in range(255)]
@@ -93,7 +93,7 @@ class gr_thread(threading.Thread):
     post_header = 'ED3'
     write_message(out_files[2], message3, pre_header, post_header)
 
-    tx_2400_r2.main(tx_time=self.tx_time, freq=self.cen_freq)
+    gr_tx.main(tx_time=self.tx_time, freq=self.cen_freq)
 
   '''[rx]----------------------------------------------------------------------
     Receives to _out.bin, which can be accessed while it is being written to
@@ -103,7 +103,7 @@ class gr_thread(threading.Thread):
 
     print '[gr_thread] Receiving on: ' + str(self.cen_freq)
 
-    rx_2400_r2.main(rx_time=self.rx_time)
+    gr_rx.main(rx_time=self.rx_time)
 
   '''[run]---------------------------------------------------------------------
     Starts when thread is run.

@@ -55,7 +55,8 @@ Config variables
 #top_level_bladeRF config
 run_time = 10000
 
-center_freq = 433920000
+#center_freq = 433920000
+center_freq = 2460000000
 bandwidth   = 1500000 #TODO currently NOT being used by gnuradio_interface effectively
 baud_rate   = 2500 #TODO currently NOT being used by gnuradio_interface effectively
 
@@ -68,16 +69,16 @@ rx_time = 10000
 #rx_processor parameters
 rx_process = True
 gps_tagging = False
-pre_headers = ['SL1', 'SL2', 'SL3']
-post_headers = ['ED1', 'ED2', 'ED3']
-in_file  = '_out.bin'
+pre_headers = ['11', '22', '33']
+post_headers = ['44', '55', '66']
+in_file  = 'io/_out.bin'
 
 #scanner parameters
 scan = False
 scan_best_freqs = False
 section_bw = 50000
 fft_size = 4096
-fft_file = 'log_power_fft_data.bin'
+fft_file = 'io/log_power_fft_data.bin'
 
 #hardware parameters
 air_sensor = False
@@ -172,17 +173,22 @@ def main():
 
     #loads fpga
     if tx or rx:
+      print '[main] Initializing bladeRF'
       sdr = blade_rx.blade_rf_sdr(1)
 
+      print '[main] Initializing GNURadio interface'
       gr = gnuradio_interface.gr_thread(tx, rx, tx_time, rx_time, center_freq, bandwidth, baud_rate)
     
     if scan:
+      print '[main] Initializing scanner'
       scanner = bladeRF_scanner.bladeRF_scanner(fft_file, center_freq, bandwidth, section_bw, fft_size)
 
     if rx_process:
+      print '[main] Initializing rx processor'
       rx_p = rx_processor.rx_processor(in_file, pre_headers, post_headers, rx, gps_tagging)
 
     if air_sensor:
+      print '[main] Initializing hardware'
       air_q_s = hardware.AirSensor()
 
     #get list of best frequencies

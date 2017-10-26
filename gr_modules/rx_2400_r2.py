@@ -42,7 +42,7 @@ class rx_2400_r2(gr.top_block):
         self.rx_vga_gain = rx_vga_gain = 35
         self.rx_lna_gain = rx_lna_gain = 6
         self.quad_gain = quad_gain = 8
-        self.freq = freq = 433920000
+        self.freq = freq = 2460000000
         self._fft_size_config = ConfigParser.ConfigParser()
         self._fft_size_config.read('default')
         try: fft_size = self._fft_size_config.getint('main', 'key')
@@ -80,9 +80,9 @@ class rx_2400_r2(gr.top_block):
         self.digital_pfb_clock_sync_xxx_0 = digital.pfb_clock_sync_fff(sps, 2*3.14159265/100, (firdes.low_pass(1.0, baud_rate*sps, baud_rate, 0.25*baud_rate)), 32, 16, 1.5, 1)
         self.digital_binary_slicer_fb_0 = digital.binary_slicer_fb()
         self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_float*fft_size, 1)
-        self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, '_out.bin', False)
+        self.blocks_file_sink_0_0 = blocks.file_sink(gr.sizeof_char*1, 'io/_out.bin', False)
         self.blocks_file_sink_0_0.set_unbuffered(True)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*fft_size, 'log_power_fft_data.bin', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_float*fft_size, 'io/log_power_fft_data.bin', False)
         self.blocks_file_sink_0.set_unbuffered(False)
         self.blocks_add_const_vxx_0 = blocks.add_const_vff((0, ))
         self.analog_quadrature_demod_cf_0 = analog.quadrature_demod_cf(quad_gain)

@@ -13,6 +13,9 @@ import struct
 import threading
 import time
 
+gps_file = 'io/gps_data'
+bitstream_pos_file = 'io/bitstream_pos'
+
 '''----------------------------------------------------------------------------
 Config variables
 ----------------------------------------------------------------------------'''
@@ -119,8 +122,8 @@ class rx_processor(threading.Thread):
       gps = ArduPilot('udp:localhost:14550', 15200, True)
       gps.setDataStreams()
 
-    with open('gps_data', "w+") as f_gps:
-      with open('bitstream_pos', "w+") as f_bs:
+    with open(gps_file, "w+") as f_gps:
+      with open(bitstream_pos_file, "w+") as f_bs:
         while True:
 
           if self.callback:
