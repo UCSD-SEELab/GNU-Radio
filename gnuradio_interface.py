@@ -9,8 +9,8 @@
                  thread to process either old or live data.
 ---*-----------------------------------------------------------------------*'''
 
-import gr_modules.tx_2400_r2 as gr_tx
-import gr_modules.rx_2400_r2 as gr_rx
+import gr_modules.tx_jason as gr_tx
+import gr_modules.rx_jason as gr_rx
 
 import struct
 import threading

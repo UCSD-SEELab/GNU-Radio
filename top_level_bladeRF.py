@@ -58,7 +58,7 @@ run_time = 10000
 #center_freq = 433920000
 center_freq = 2460000000
 bandwidth   = 1500000 #TODO currently NOT being used by gnuradio_interface effectively
-baud_rate   = 2500 #TODO currently NOT being used by gnuradio_interface effectively
+baud_rate   = 240000 #TODO currently NOT being used by gnuradio_interface effectively
 
 #gnuradio_interface parameters
 tx = False
@@ -69,8 +69,8 @@ rx_time = 10000
 #rx_processor parameters
 rx_process = True
 gps_tagging = False
-pre_headers = ['11', '22', '33']
-post_headers = ['44', '55', '66']
+pre_headers = ['SL1', 'SL2', 'SL3']
+post_headers = ['EL4', 'EL5', 'EL6']
 in_file  = 'io/_out.bin'
 
 #scanner parameters
