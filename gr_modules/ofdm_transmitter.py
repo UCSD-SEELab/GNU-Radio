@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Transmitter
-# Generated: Fri Oct 27 10:07:42 2017
+# Generated: Fri Oct 27 16:31:30 2017
 ##################################################
 
 from gnuradio import blocks
@@ -21,15 +21,15 @@ import time
 
 class ofdm_transmitter(gr.top_block):
 
-    def __init__(self, center_freq=440000000, tx_time=5, filename='C:/Projects/gr-bladerf-utils/io/_send.bin'):
+    def __init__(self, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_send.bin', tx_time=5):
         gr.top_block.__init__(self, "Ofdm Transmitter")
 
         ##################################################
         # Parameters
         ##################################################
         self.center_freq = center_freq
-        self.tx_time = tx_time
         self.filename = filename
+        self.tx_time = tx_time
 
         ##################################################
         # Variables
@@ -80,7 +80,7 @@ class ofdm_transmitter(gr.top_block):
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, length_tag_key, False, gr.GR_LSB_FIRST)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(8, payload_mod.bits_per_symbol(), length_tag_key, False, gr.GR_LSB_FIRST)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.05, ))
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, 'C:\\Projects\\gr-bladerf-utils\\io\\_send.bin', True)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, filename, True)
 
         ##################################################
         # Connections
@@ -107,17 +107,18 @@ class ofdm_transmitter(gr.top_block):
     def set_center_freq(self, center_freq):
         self.center_freq = center_freq
 
-    def get_tx_time(self):
-        return self.tx_time
-
-    def set_tx_time(self, tx_time):
-        self.tx_time = tx_time
-
     def get_filename(self):
         return self.filename
 
     def set_filename(self, filename):
         self.filename = filename
+        self.blocks_file_source_0.open(self.filename, True)
+
+    def get_tx_time(self):
+        return self.tx_time
+
+    def set_tx_time(self, tx_time):
+        self.tx_time = tx_time
 
     def get_occupied_carriers(self):
         return self.occupied_carriers
@@ -248,11 +249,11 @@ def argument_parser():
         "", "--center-freq", dest="center_freq", type="intx", default=440000000,
         help="Set center_freq [default=%default]")
     parser.add_option(
-        "", "--tx-time", dest="tx_time", type="intx", default=5,
-        help="Set tx_time [default=%default]")
-    parser.add_option(
         "", "--filename", dest="filename", type="string", default='C:/Projects/gr-bladerf-utils/io/_send.bin',
         help="Set filename [default=%default]")
+    parser.add_option(
+        "", "--tx-time", dest="tx_time", type="intx", default=5,
+        help="Set tx_time [default=%default]")
     return parser
 
 
@@ -260,30 +261,15 @@ def main(top_block_cls=ofdm_transmitter, options=None):
     if options is None:
         options, _ = argument_parser().parse_args()
 
-    tb = top_block_cls(center_freq=options.center_freq, tx_time=options.tx_time, filename=options.filename)
-    filenames = []
-    filenames.append('io/_send1.bin')
-    filenames.append('io/_send2.bin')
-    filenames.append('io/_send3.bin')
+    tb = top_block_cls(center_freq=options.center_freq, filename=options.filename, tx_time=options.tx_time)
+    tb.start()
+    try:
+        raw_input('Press Enter to quit: ')
+    except EOFError:
+        pass
+    tb.stop()
+    tb.wait()
 
-    freq1 = 433920000
-    freq2 = 915000000
-    freq3 = 2450000000
-
-    while True:
-
-        print '[tx] File: ' + filenames[0] + ' Freq: ' + str(tb.get_center_freq())
-        #tb.set_filepath(filenames[0])
-        #tb.set_center_freq(freq1)
-
-        tb.start()
-        start_time = time.time()
-
-        while (time.time() - start_time < options.tx_time):
-            time.sleep(0.1)
-
-        tb.stop()
-        tb.wait()
 
 if __name__ == '__main__':
     main()

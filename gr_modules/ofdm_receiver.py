@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Receiver
-# Generated: Fri Oct 27 10:07:44 2017
+# Generated: Fri Oct 27 16:31:44 2017
 ##################################################
 
 from gnuradio import analog
@@ -103,7 +103,7 @@ class ofdm_receiver(gr.top_block):
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(header_mod.base())
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(payload_mod.bits_per_symbol(), 8, packet_length_tag_key, True, gr.GR_LSB_FIRST)
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, 'C:/Projects/gr-bladerf-utils/io/_out', False)
+        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, filename, False)
         self.blocks_file_sink_0.set_unbuffered(True)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_gr_complex*1, fft_len+fft_len/4)
         self.analog_frequency_modulator_fc_0 = analog.frequency_modulator_fc(-2.0/fft_len)
@@ -144,6 +144,7 @@ class ofdm_receiver(gr.top_block):
 
     def set_filename(self, filename):
         self.filename = filename
+        self.blocks_file_sink_0.open(self.filename)
 
     def get_rx_time(self):
         return self.rx_time
@@ -329,12 +330,12 @@ def main(top_block_cls=ofdm_receiver, options=None):
 
     tb = top_block_cls(center_freq=options.center_freq, filename=options.filename, rx_time=options.rx_time)
     tb.start()
-
-    start_time = time.time()
-    #count = 0
-
-    while (time.time() - start_time < options.rx_time):
-        time.sleep(0.1)
+    try:
+        raw_input('Press Enter to quit: ')
+    except EOFError:
+        pass
+    tb.stop()
+    tb.wait()
 
 
 if __name__ == '__main__':

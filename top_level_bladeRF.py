@@ -56,7 +56,7 @@ Config variables
 run_time = 10000
 
 #center_freq = 433920000
-center_freq = 2450000000
+center_freq = 440000000
 bandwidth   = 1500000 #TODO currently NOT being used by gnuradio_interface effectively
 baud_rate   = 50000 #TODO currently NOT being used by gnuradio_interface effectively
 
@@ -79,6 +79,7 @@ scan_best_freqs = False
 section_bw = 50000
 fft_size = 4096
 fft_file = 'io/log_power_fft_data.bin'
+
 
 #hardware parameters
 air_sensor = False
