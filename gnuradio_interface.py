@@ -9,8 +9,8 @@
                  thread to process either old or live data.
 ---*-----------------------------------------------------------------------*'''
 
-import gr_modules.tx_jason as gr_tx
-import gr_modules.rx_jason as gr_rx
+import gr_modules.ofdm_transmitter as gr_tx
+import gr_modules.ofdm_receiver as gr_rx
 
 import struct
 import threading
@@ -20,7 +20,15 @@ import time
 Config variables
 ----------------------------------------------------------------------------'''
 #transmit variables
-out_file = 'io/_send.bin'
+tx_file = 'C:/Projects/gr-bladerf-utils/io/_send.bin'
+rx_file = 'C:/Projects/gr-bladerf-utils/io/_out'
+
+class gr_options():
+  def __init__(self, freq, time, filename):
+    self.center_freq = freq
+    self.tx_time = time
+    self.rx_time = time
+    self.filename = filename
 
 '''[gr_thread]-----------------------------------------------------------------
   Gnuradio interface which allows for callbacks to be made, parallelizing work
@@ -93,7 +101,9 @@ class gr_thread(threading.Thread):
     post_header = 'ED3'
     write_message(out_files[2], message3, pre_header, post_header)
 
-    gr_tx.main(tx_time=self.tx_time, freq=self.cen_freq)
+    options = gr_options(self.cen_freq, self.tx_time, tx_file)
+    gr_tx.main(options=options)
+    #gr_tx.main(tx_time=self.tx_time, freq=self.cen_freq)
 
   '''[rx]----------------------------------------------------------------------
     Receives to _out.bin, which can be accessed while it is being written to
@@ -103,7 +113,9 @@ class gr_thread(threading.Thread):
 
     print '[gr_thread] Receiving on: ' + str(self.cen_freq)
 
-    gr_rx.main(rx_time=self.rx_time)
+    options = gr_options(self.cen_freq, self.rx_time, rx_file)
+    gr_rx.main(options=options)
+    #gr_rx.main(rx_time=self.rx_time)
 
   '''[run]---------------------------------------------------------------------
     Starts when thread is run.

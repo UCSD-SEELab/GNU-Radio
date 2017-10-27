@@ -105,7 +105,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>500000</value>
+      <value>50000</value>
     </param>
   </block>
   <block>
@@ -159,7 +159,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>1</value>
+      <value>10</value>
     </param>
   </block>
   <block>
@@ -236,7 +236,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>C:\Users\whatn\Desktop\_send.bin</value>
+      <value>C:/Projects/gr-bladerf-utils/io/_send.bin</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -269,6 +269,49 @@
     <param>
       <key>vlen</key>
       <value>1</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(784, 52)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>center_freq</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value></value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value>f</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>intx</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>440000000</value>
     </param>
   </block>
   <block>

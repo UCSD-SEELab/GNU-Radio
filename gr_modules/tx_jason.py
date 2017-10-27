@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Tx Jason
-# Generated: Thu Oct 26 16:10:07 2017
+# Generated: Thu Oct 26 16:55:54 2017
 ##################################################
 
 from gnuradio import blocks
@@ -20,17 +20,22 @@ import time
 
 class tx_jason(gr.top_block):
 
-    def __init__(self):
+    def __init__(self, center_freq=440000000):
         gr.top_block.__init__(self, "Tx Jason")
+
+        ##################################################
+        # Parameters
+        ##################################################
+        self.center_freq = center_freq
 
         ##################################################
         # Variables
         ##################################################
         self.sps = sps = 8
         self.samp_rate_tx = samp_rate_tx = 4000000
-        self.samp_rate = samp_rate = 1
+        self.samp_rate = samp_rate = 10
         self.freq = freq = 440000000
-        self.baud_rate = baud_rate = 500000
+        self.baud_rate = baud_rate = 50000
 
         ##################################################
         # Blocks
@@ -58,7 +63,7 @@ class tx_jason(gr.top_block):
         	verbose=False,
         	log=False,
         )
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, 'C:\\Projects\\gr-bladerf-utils\\io\\_send.bin', True)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, 'C:/Projects/gr-bladerf-utils/io/_send.bin', True)
 
         ##################################################
         # Connections
@@ -66,6 +71,12 @@ class tx_jason(gr.top_block):
         self.connect((self.blocks_file_source_0, 0), (self.digital_gfsk_mod_0, 0))
         self.connect((self.digital_gfsk_mod_0, 0), (self.rational_resampler_xxx_0, 0))
         self.connect((self.rational_resampler_xxx_0, 0), (self.osmosdr_sink_0, 0))
+
+    def get_center_freq(self):
+        return self.center_freq
+
+    def set_center_freq(self, center_freq):
+        self.center_freq = center_freq
 
     def get_sps(self):
         return self.sps
@@ -100,9 +111,23 @@ class tx_jason(gr.top_block):
         self.baud_rate = baud_rate
 
 
-def main(top_block_cls=tx_jason, options=None, tx_time=1000, freq=None, fn=None):
+def argument_parser():
+    parser = OptionParser(usage="%prog: [options]", option_class=eng_option)
+    parser.add_option(
+        "-f", "--center-freq", dest="center_freq", type="intx", default=440000000,
+        help="Set center_freq [default=%default]")
+    return parser
 
-    tb = top_block_cls(center_freq=options.center_freq, filename=options.filename)
+
+def main(top_block_cls=tx_jason, options=None, tx_time=1000, freq=None, fn=None):
+    if options is None:
+        options, _ = argument_parser().parse_args()
+
+    if freq is not None and fn is not None:
+        options.center_freq = freq
+        options.filename=fn
+
+    tb = top_block_cls(center_freq=options.center_freq)
     
     filenames = []
     filenames.append('io/_send1.bin')

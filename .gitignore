@@ -2,6 +2,7 @@
 *.pyc
 *.bin
 *.swp
+io/*
 bitstream_pos
 gps_data
 rssi_data

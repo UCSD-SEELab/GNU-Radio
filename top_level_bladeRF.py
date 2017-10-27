@@ -56,9 +56,9 @@ Config variables
 run_time = 10000
 
 #center_freq = 433920000
-center_freq = 2460000000
+center_freq = 2450000000
 bandwidth   = 1500000 #TODO currently NOT being used by gnuradio_interface effectively
-baud_rate   = 240000 #TODO currently NOT being used by gnuradio_interface effectively
+baud_rate   = 50000 #TODO currently NOT being used by gnuradio_interface effectively
 
 #gnuradio_interface parameters
 tx = False
