@@ -20,8 +20,8 @@ import time
 Config variables
 ----------------------------------------------------------------------------'''
 #transmit variables
-tx_file = 'C:/Projects/gr-bladerf-utils/io/_send.bin'
-rx_file = 'C:/Projects/gr-bladerf-utils/io/_out'
+tx_file = '/home/pi/projects/gr-bladerf-utils/io/_send.bin'
+rx_file = '/home/pi/projects/gr-bladerf-utils/io/_out'
 
 class gr_options():
   def __init__(self, freq, time, filename):

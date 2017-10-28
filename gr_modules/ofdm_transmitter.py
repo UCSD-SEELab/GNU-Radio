@@ -57,7 +57,7 @@ class ofdm_transmitter(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.osmosdr_sink_0 = osmosdr.sink( args="numchan=" + str(1) + " " + 'bladerf=1' )
+        self.osmosdr_sink_0 = osmosdr.sink( args="numchan=" + str(1) + " " + 'bladerf=0' )
         self.osmosdr_sink_0.set_sample_rate(samp_rate_tx)
         self.osmosdr_sink_0.set_center_freq(freq, 0)
         self.osmosdr_sink_0.set_freq_corr(0, 0)
