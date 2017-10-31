@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Transmitter
-# Generated: Fri Oct 27 16:31:30 2017
+# Generated: Tue Oct 31 12:57:22 2017
 ##################################################
 
 from gnuradio import blocks
@@ -57,7 +57,7 @@ class ofdm_transmitter(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.osmosdr_sink_0 = osmosdr.sink( args="numchan=" + str(1) + " " + 'bladerf=1' )
+        self.osmosdr_sink_0 = osmosdr.sink( args="numchan=" + str(1) + " " + 'bladerf=0' )
         self.osmosdr_sink_0.set_sample_rate(samp_rate_tx)
         self.osmosdr_sink_0.set_center_freq(freq, 0)
         self.osmosdr_sink_0.set_freq_corr(0, 0)
@@ -262,13 +262,29 @@ def main(top_block_cls=ofdm_transmitter, options=None):
         options, _ = argument_parser().parse_args()
 
     tb = top_block_cls(center_freq=options.center_freq, filename=options.filename, tx_time=options.tx_time)
-    tb.start()
-    try:
-        raw_input('Press Enter to quit: ')
-    except EOFError:
-        pass
-    tb.stop()
-    tb.wait()
+    filenames = []
+    filenames.append('io/_send1.bin')
+    filenames.append('io/_send2.bin')
+    filenames.append('io/_send3.bin')
+
+    freq1 = 433920000
+    freq2 = 915000000
+    freq3 = 2450000000
+
+    while True:
+
+        print '[tx] File: ' + filenames[0] + ' Freq: ' + str(tb.get_center_freq())
+        #tb.set_filepath(filenames[0])
+        #tb.set_center_freq(freq1)
+
+        tb.start()
+        start_time = time.time()
+
+        while (time.time() - start_time < options.tx_time):
+            time.sleep(0.1)
+
+        tb.stop()
+        tb.wait()
 
 
 if __name__ == '__main__':

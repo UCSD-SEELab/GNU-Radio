@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Receiver
-# Generated: Fri Oct 27 16:31:44 2017
+# Generated: Tue Oct 31 12:57:21 2017
 ##################################################
 
 from gnuradio import analog
@@ -52,7 +52,7 @@ class ofdm_receiver(gr.top_block):
         self.samp_rate_1 = samp_rate_1 = 10000
         self.samp_rate_0 = samp_rate_0 = int(baud_rate * sps)
         self.samp_rate = samp_rate = 400e3
-        self.rx_vga_gain = rx_vga_gain = 0
+        self.rx_vga_gain = rx_vga_gain = 30
         self.rx_lna_gain = rx_lna_gain = 6
         self.payload_equalizer = payload_equalizer = digital.ofdm_equalizer_simpledfe(fft_len, payload_mod.base(), occupied_carriers, pilot_carriers, pilot_symbols, 1)
         self.packet_len = packet_len = 96
@@ -330,12 +330,12 @@ def main(top_block_cls=ofdm_receiver, options=None):
 
     tb = top_block_cls(center_freq=options.center_freq, filename=options.filename, rx_time=options.rx_time)
     tb.start()
-    try:
-        raw_input('Press Enter to quit: ')
-    except EOFError:
-        pass
-    tb.stop()
-    tb.wait()
+
+    start_time = time.time()
+    #count = 0
+
+    while (time.time() - start_time < options.rx_time):
+        time.sleep(0.1)
 
 
 if __name__ == '__main__':
