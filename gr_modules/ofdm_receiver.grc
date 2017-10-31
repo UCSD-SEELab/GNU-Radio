@@ -159,7 +159,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>440000000</value>
+      <value>center_freq</value>
     </param>
   </block>
   <block>

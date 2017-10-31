@@ -81,9 +81,14 @@ class rx_processor(threading.Thread):
     return - current end position of bitstream
   --------------------------------------------------------------------------'''
   def rx_spin(self, pos):
-    with open(self.in_file, 'rb') as f:
+    with open(self.in_file, 'r') as f:
+
+      f.seek(0, 2)
+      print '[rx_processor] New bytes: ' + str(f.tell() - pos)
+      '''
       f.seek(pos)
 
+      
       stuff = f.read(1)
       
       if stuff == '':
@@ -100,6 +105,7 @@ class rx_processor(threading.Thread):
       print '[rx_processor] Starting at pos: ' + str(pos) + '\tBitstream Length: ' + str(len(l))
       #TODO do something with this
       #print '[rx_processor] File read complete.'
+      '''
       return f.tell()
 
   '''[get_file_pos]------------------------------------------------------------
@@ -188,11 +194,11 @@ class rx_processor(threading.Thread):
             continue
 
           #process stream
-          extracted = extract_by_headers(self.pre_h, self.post_h, self.message)
-          if len(extracted) > 0:
-            print '[rx_processor] Successful packet transfer!'
-
-          print '[rx_processor] Valid Packets: ' + str(len(extracted)) + '\tTime: ' + str(end_time - start_time)
+          #extracted = extract_by_headers(self.pre_h, self.post_h, self.message)
+          #if len(extracted) > 0:
+          #  print '[rx_processor] Successful packet transfer!'
+          #
+          #print '[rx_processor] Valid Packets: ' + str(len(extracted)) + '\tTime: ' + str(end_time - start_time)
 
 '''[extract_by_headers]--------------------------------------------------------
   Look for pre and post headers in bitstream, extract message if found.

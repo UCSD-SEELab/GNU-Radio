@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Receiver
-# Generated: Tue Oct 31 12:57:21 2017
+# Generated: Tue Oct 31 14:19:48 2017
 ##################################################
 
 from gnuradio import analog
@@ -58,7 +58,7 @@ class ofdm_receiver(gr.top_block):
         self.packet_len = packet_len = 96
         self.header_formatter = header_formatter = digital.packet_header_ofdm(occupied_carriers, n_syms=1, len_tag_key=packet_length_tag_key, frame_len_tag_key=length_tag_key, bits_per_header_sym=header_mod.bits_per_symbol(), bits_per_payload_sym=payload_mod.bits_per_symbol(), scramble_header=False)
         self.header_equalizer = header_equalizer = digital.ofdm_equalizer_simpledfe(fft_len, header_mod.base(), occupied_carriers, pilot_carriers, pilot_symbols)
-        self.freq = freq = 440000000
+        self.freq = freq = center_freq
 
         ##################################################
         # Blocks
@@ -138,6 +138,7 @@ class ofdm_receiver(gr.top_block):
 
     def set_center_freq(self, center_freq):
         self.center_freq = center_freq
+        self.set_freq(self.center_freq)
 
     def get_filename(self):
         return self.filename
