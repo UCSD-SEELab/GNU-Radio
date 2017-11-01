@@ -128,77 +128,77 @@ class rx_processor(threading.Thread):
       gps = ArduPilot('udp:localhost:14550', 15200, True)
       gps.setDataStreams()
 
-    with open(gps_file, "w+") as f_gps:
-      with open(bitstream_pos_file, "w+") as f_bs:
-        while True:
+    while True:
 
-          if self.callback:
-            break
+      if self.callback:
+        break
 
-          while not self.filewrite:
-            time.sleep(0.1)
+      while not self.filewrite:
+        time.sleep(0.1)
 
-          self.filewrite = False
+      self.filewrite = False
 
-          start_time = time.time() * 1000
+      start_time = time.time() * 1000
 
-          #access stream
-          previous_pos = self.file_pos
-          self.file_pos = self.rx_spin(self.file_pos)
+      #access stream
+      previous_pos = self.file_pos
+      self.file_pos = self.rx_spin(self.file_pos)
 
-          #write GPS data
-          if self.gps_new:
-            print '[rx_processor] writing GPS and RSSI data'
+      #write GPS data
+      if self.gps_new:
+        with open(gps_file, "a") as f_gps:
+          print '[rx_processor] writing GPS and RSSI data'
 
-            #write location data
-            try:
-              msg = gps.getLocation()
-            except Exception:
-              print '[rx_processor] [gps] exception: location'
+          #write location data
+          try:
+            msg = gps.getLocation()
+          except Exception:
+            print '[rx_processor] [gps] exception: location'
 
-            if msg is not None:
-              f_gps.write(str(msg) + '\n')
-            else:
-              f_gps.write('nothing\n')
+          if msg is not None:
+            f_gps.write(str(msg) + '\n')
+          else:
+            f_gps.write('nothing\n')
 
-            #write heading data
-            try:
-              msg = gps.getHeading()
-            except Exception:
-              print '[rx_processor] [gps] exception: heading'
+          #write heading data
+          try:
+            msg = gps.getHeading()
+          except Exception:
+            print '[rx_processor] [gps] exception: heading'
 
-            if msg is not None:
-              f_gps.write(str(msg) + '\n')
-            else:
-              f_gps.write('nothing\n')
+          if msg is not None:
+            f_gps.write(str(msg) + '\n')
+          else:
+            f_gps.write('nothing\n')
 
-            #write altitude data
-            try:
-              msg = gps.getAltitude()
-            except Exception:
-              print '[rx_processor] [gps] exception: altitude'
+          #write altitude data
+          try:
+            msg = gps.getAltitude()
+          except Exception:
+            print '[rx_processor] [gps] exception: altitude'
 
-            if msg is not None:
-              f_gps.write(str(msg) + '\n')
-            else:
-              f_gps.write('nothing\n')
+          if msg is not None:
+            f_gps.write(str(msg) + '\n')
+          else:
+            f_gps.write('nothing\n')
 
-          #write bitstream pos data
-          if self.rx_new:
-            f_bs.write(str(self.file_pos) + '\n')
+      #write bitstream pos data
+      if self.rx_new:
+        with open(bitstream_pos_file, "a") as f_bs:
+          f_bs.write(str(self.file_pos) + '\n')
 
-          end_time = time.time() * 1000
+      end_time = time.time() * 1000
 
-          if self.file_pos == previous_pos:
-            print '[rx_processor] No new data in bitstream'
-            continue
+      if self.file_pos == previous_pos:
+        print '[rx_processor] No new data in bitstream'
+        continue
 
-          #process stream
-          #extracted = extract_by_headers(self.pre_h, self.post_h, self.message)
-          #if len(extracted) > 0:
-          #  print '[rx_processor] Successful packet transfer!'
-          #
-          #print '[rx_processor] Valid Packets: ' + str(len(extracted)) + '\tTime: ' + str(end_time - start_time)
+      #process stream
+      #extracted = extract_by_headers(self.pre_h, self.post_h, self.message)
+      #if len(extracted) > 0:
+      #  print '[rx_processor] Successful packet transfer!'
+      #
+      #print '[rx_processor] Valid Packets: ' + str(len(extracted)) + '\tTime: ' + str(end_time - start_time)
 
 '''[extract_by_headers]--------------------------------------------------------
   Look for pre and post headers in bitstream, extract message if found.

@@ -71,7 +71,7 @@ rx_process = True
 gps_tagging = False
 pre_headers = ['SL1', 'SL2', 'SL3']
 post_headers = ['EL4', 'EL5', 'EL6']
-in_file  = 'io/_out.bin'
+in_file  = 'io/_out'
 
 #scanner parameters
 scan = False

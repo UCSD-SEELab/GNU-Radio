@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Transmitter
-# Generated: Tue Oct 31 14:33:11 2017
+# Generated: Tue Oct 31 23:31:51 2017
 ##################################################
 
 from gnuradio import blocks
@@ -21,7 +21,7 @@ import time
 
 class ofdm_transmitter(gr.top_block):
 
-    def __init__(self, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_send.bin', tx_time=5):
+    def __init__(self, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_send.bin', tx_time=5, bandwidth=5000000):
         gr.top_block.__init__(self, "Ofdm Transmitter")
 
         ##################################################
@@ -30,19 +30,20 @@ class ofdm_transmitter(gr.top_block):
         self.center_freq = center_freq
         self.filename = filename
         self.tx_time = tx_time
+        self.bandwidth = bandwidth
 
         ##################################################
         # Variables
         ##################################################
+        self.samp_rate_tx = samp_rate_tx = 5000000
         self.occupied_carriers = occupied_carriers = (range(-26, -21) + range(-20, -7) + range(-6, 0) + range(1, 7) + range(8, 21) + range(22, 27),)
         self.length_tag_key = length_tag_key = "packet_len"
         self.txvga2 = txvga2 = 25
         self.txvga1 = txvga1 = -4
         self.sync_word2 = sync_word2 = [0, 0, 0, 0, 0, 0, -1, -1, -1, -1, 1, 1, -1, -1, -1, 1, -1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, 1, -1, -1, 1, -1, 0, 1, -1, 1, 1, 1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, -1, -1, -1, -1, 0, 0, 0, 0, 0]
         self.sync_word1 = sync_word1 = [0., 0., 0., 0., 0., 0., 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., -1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., -1.41421356, 0., -1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 0., 0., 0., 0., 0.]
-        self.samp_rate_tx = samp_rate_tx = 400000
         self.samp_rate_0 = samp_rate_0 = 100000
-        self.samp_rate = samp_rate = 400e3
+        self.samp_rate = samp_rate = samp_rate_tx
         self.rolloff = rolloff = 0
         self.pilot_symbols = pilot_symbols = ((1, 1, 1, -1,),)
         self.pilot_carriers = pilot_carriers = ((-21, -7, 7, 21,),)
@@ -65,7 +66,7 @@ class ofdm_transmitter(gr.top_block):
         self.osmosdr_sink_0.set_if_gain(0, 0)
         self.osmosdr_sink_0.set_bb_gain(txvga1, 0)
         self.osmosdr_sink_0.set_antenna('', 0)
-        self.osmosdr_sink_0.set_bandwidth(1500000, 0)
+        self.osmosdr_sink_0.set_bandwidth(bandwidth, 0)
 
         self.fft_vxx_0 = fft.fft_vcc(fft_len, False, (()), True, 1)
         self.digital_protocol_formatter_bb_0 = digital.protocol_formatter_bb(hdr_format, length_tag_key)
@@ -121,6 +122,21 @@ class ofdm_transmitter(gr.top_block):
     def set_tx_time(self, tx_time):
         self.tx_time = tx_time
 
+    def get_bandwidth(self):
+        return self.bandwidth
+
+    def set_bandwidth(self, bandwidth):
+        self.bandwidth = bandwidth
+        self.osmosdr_sink_0.set_bandwidth(self.bandwidth, 0)
+
+    def get_samp_rate_tx(self):
+        return self.samp_rate_tx
+
+    def set_samp_rate_tx(self, samp_rate_tx):
+        self.samp_rate_tx = samp_rate_tx
+        self.set_samp_rate(self.samp_rate_tx)
+        self.osmosdr_sink_0.set_sample_rate(self.samp_rate_tx)
+
     def get_occupied_carriers(self):
         return self.occupied_carriers
 
@@ -160,13 +176,6 @@ class ofdm_transmitter(gr.top_block):
 
     def set_sync_word1(self, sync_word1):
         self.sync_word1 = sync_word1
-
-    def get_samp_rate_tx(self):
-        return self.samp_rate_tx
-
-    def set_samp_rate_tx(self, samp_rate_tx):
-        self.samp_rate_tx = samp_rate_tx
-        self.osmosdr_sink_0.set_sample_rate(self.samp_rate_tx)
 
     def get_samp_rate_0(self):
         return self.samp_rate_0
@@ -255,6 +264,9 @@ def argument_parser():
     parser.add_option(
         "", "--tx-time", dest="tx_time", type="intx", default=5,
         help="Set tx_time [default=%default]")
+    parser.add_option(
+        "", "--bandwidth", dest="bandwidth", type="intx", default=5000000,
+        help="Set bandwidth [default=%default]")
     return parser
 
 
@@ -262,30 +274,17 @@ def main(top_block_cls=ofdm_transmitter, options=None):
     if options is None:
         options, _ = argument_parser().parse_args()
 
-    tb = top_block_cls(center_freq=options.center_freq, filename=options.filename, tx_time=options.tx_time)
-    filenames = []
-    filenames.append('io/_send1.bin')
-    filenames.append('io/_send2.bin')
-    filenames.append('io/_send3.bin')
+    tb = top_block_cls(center_freq=options.center_freq, filename=options.filename, tx_time=options.tx_time, bandwidth=options.bandwidth)
+    print '[odfm tx] Freq: ' + str(options.center_freq)
 
-    freq1 = 433920000
-    freq2 = 915000000
-    freq3 = 2450000000
+    tb.start()
+    start_time = time.time()
 
-    while True:
+    while (time.time() - start_time < options.tx_time):
+        time.sleep(0.1)
 
-        print '[tx] File: ' + filenames[0] + ' Freq: ' + str(tb.get_center_freq())
-        #tb.set_filepath(filenames[0])
-        #tb.set_center_freq(freq1)
-
-        tb.start()
-        start_time = time.time()
-
-        while (time.time() - start_time < options.tx_time):
-            time.sleep(0.1)
-
-        tb.stop()
-        tb.wait()
+    tb.stop()
+    tb.wait()
 
 
 if __name__ == '__main__':

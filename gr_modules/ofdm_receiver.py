@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Receiver
-# Generated: Tue Oct 31 14:19:48 2017
+# Generated: Tue Oct 31 23:31:38 2017
 ##################################################
 
 from gnuradio import analog
@@ -23,12 +23,13 @@ import time
 
 class ofdm_receiver(gr.top_block):
 
-    def __init__(self, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_out', rx_time=5):
+    def __init__(self, bandwidth=5000000, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_out', rx_time=5):
         gr.top_block.__init__(self, "Ofdm Receiver")
 
         ##################################################
         # Parameters
         ##################################################
+        self.bandwidth = bandwidth
         self.center_freq = center_freq
         self.filename = filename
         self.rx_time = rx_time
@@ -48,10 +49,9 @@ class ofdm_receiver(gr.top_block):
         self.baud_rate = baud_rate = 2490
         self.sync_word2 = sync_word2 = [0j, 0j, 0j, 0j, 0j, 0j, (-1+0j), (-1+0j), (-1+0j), (-1+0j), (1+0j), (1+0j), (-1+0j), (-1+0j), (-1+0j), (1+0j), (-1+0j), (1+0j), (1+0j), (1 +0j), (1+0j), (1+0j), (-1+0j), (-1+0j), (-1+0j), (-1+0j), (-1+0j), (1+0j), (-1+0j), (-1+0j), (1+0j), (-1+0j), 0j, (1+0j), (-1+0j), (1+0j), (1+0j), (1+0j), (-1+0j), (1+0j), (1+0j), (1+0j), (-1+0j), (1+0j), (1+0j), (1+0j), (1+0j), (-1+0j), (1+0j), (-1+0j), (-1+0j), (-1+0j), (1+0j), (-1+0j), (1+0j), (-1+0j), (-1+0j), (-1+0j), (-1+0j), 0j, 0j, 0j, 0j, 0j]
         self.sync_word1 = sync_word1 = [0., 0., 0., 0., 0., 0., 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., -1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., -1.41421356, 0., -1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 0., 0., 0., 0., 0.]
-        self.samp_rate_tx = samp_rate_tx = 400000
+        self.samp_rate_rx = samp_rate_rx = 5000000
         self.samp_rate_1 = samp_rate_1 = 10000
         self.samp_rate_0 = samp_rate_0 = int(baud_rate * sps)
-        self.samp_rate = samp_rate = 400e3
         self.rx_vga_gain = rx_vga_gain = 30
         self.rx_lna_gain = rx_lna_gain = 6
         self.payload_equalizer = payload_equalizer = digital.ofdm_equalizer_simpledfe(fft_len, payload_mod.base(), occupied_carriers, pilot_carriers, pilot_symbols, 1)
@@ -64,7 +64,7 @@ class ofdm_receiver(gr.top_block):
         # Blocks
         ##################################################
         self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + 'bladerf=0' )
-        self.osmosdr_source_0.set_sample_rate(samp_rate_tx)
+        self.osmosdr_source_0.set_sample_rate(samp_rate_rx)
         self.osmosdr_source_0.set_center_freq(freq, 0)
         self.osmosdr_source_0.set_freq_corr(0, 0)
         self.osmosdr_source_0.set_dc_offset_mode(1, 0)
@@ -74,7 +74,7 @@ class ofdm_receiver(gr.top_block):
         self.osmosdr_source_0.set_if_gain(0, 0)
         self.osmosdr_source_0.set_bb_gain(rx_vga_gain, 0)
         self.osmosdr_source_0.set_antenna('', 0)
-        self.osmosdr_source_0.set_bandwidth(0, 0)
+        self.osmosdr_source_0.set_bandwidth(bandwidth, 0)
 
         self.fft_vxx_1 = fft.fft_vcc(fft_len, True, (), True, 1)
         self.fft_vxx_0 = fft.fft_vcc(fft_len, True, (()), True, 1)
@@ -94,7 +94,7 @@ class ofdm_receiver(gr.top_block):
         	  True,
         	  gr.sizeof_gr_complex,
         	  "rx_time",
-                  400000,
+                  samp_rate_rx,
                   (),
                   0,
             )
@@ -132,6 +132,13 @@ class ofdm_receiver(gr.top_block):
         self.connect((self.fft_vxx_1, 0), (self.digital_ofdm_frame_equalizer_vcvc_1, 0))
         self.connect((self.osmosdr_source_0, 0), (self.blocks_delay_0, 0))
         self.connect((self.osmosdr_source_0, 0), (self.digital_ofdm_sync_sc_cfb_0, 0))
+
+    def get_bandwidth(self):
+        return self.bandwidth
+
+    def set_bandwidth(self, bandwidth):
+        self.bandwidth = bandwidth
+        self.osmosdr_source_0.set_bandwidth(self.bandwidth, 0)
 
     def get_center_freq(self):
         return self.center_freq
@@ -240,12 +247,12 @@ class ofdm_receiver(gr.top_block):
     def set_sync_word1(self, sync_word1):
         self.sync_word1 = sync_word1
 
-    def get_samp_rate_tx(self):
-        return self.samp_rate_tx
+    def get_samp_rate_rx(self):
+        return self.samp_rate_rx
 
-    def set_samp_rate_tx(self, samp_rate_tx):
-        self.samp_rate_tx = samp_rate_tx
-        self.osmosdr_source_0.set_sample_rate(self.samp_rate_tx)
+    def set_samp_rate_rx(self, samp_rate_rx):
+        self.samp_rate_rx = samp_rate_rx
+        self.osmosdr_source_0.set_sample_rate(self.samp_rate_rx)
 
     def get_samp_rate_1(self):
         return self.samp_rate_1
@@ -258,12 +265,6 @@ class ofdm_receiver(gr.top_block):
 
     def set_samp_rate_0(self, samp_rate_0):
         self.samp_rate_0 = samp_rate_0
-
-    def get_samp_rate(self):
-        return self.samp_rate
-
-    def set_samp_rate(self, samp_rate):
-        self.samp_rate = samp_rate
 
     def get_rx_vga_gain(self):
         return self.rx_vga_gain
@@ -314,6 +315,9 @@ class ofdm_receiver(gr.top_block):
 def argument_parser():
     parser = OptionParser(usage="%prog: [options]", option_class=eng_option)
     parser.add_option(
+        "", "--bandwidth", dest="bandwidth", type="intx", default=5000000,
+        help="Set bandwidth [default=%default]")
+    parser.add_option(
         "-f", "--center-freq", dest="center_freq", type="intx", default=440000000,
         help="Set center_freq [default=%default]")
     parser.add_option(
@@ -329,14 +333,18 @@ def main(top_block_cls=ofdm_receiver, options=None):
     if options is None:
         options, _ = argument_parser().parse_args()
 
-    tb = top_block_cls(center_freq=options.center_freq, filename=options.filename, rx_time=options.rx_time)
-    tb.start()
+    tb = top_block_cls(bandwidth=options.bandwidth, center_freq=options.center_freq, filename=options.filename, rx_time=options.rx_time)
+    print '[odfm rx] Freq: ' + str(options.center_freq)
 
+    tb.start()
     start_time = time.time()
     #count = 0
 
     while (time.time() - start_time < options.rx_time):
         time.sleep(0.1)
+
+    tb.stop()
+    tb.wait()
 
 
 if __name__ == '__main__':

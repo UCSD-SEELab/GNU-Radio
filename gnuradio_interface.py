@@ -24,8 +24,9 @@ tx_file = 'C:/Projects/gr-bladerf-utils/io/_send.bin'
 rx_file = 'C:/Projects/gr-bladerf-utils/io/_out'
 
 class gr_options():
-  def __init__(self, freq, time, filename):
+  def __init__(self, freq, bw, time, filename):
     self.center_freq = freq
+    self.bandwidth = bw
     self.tx_time = time
     self.rx_time = time
     self.filename = filename
@@ -101,7 +102,7 @@ class gr_thread(threading.Thread):
     post_header = 'ED3'
     write_message(out_files[2], message3, pre_header, post_header)
 
-    options = gr_options(self.cen_freq, self.tx_time, tx_file)
+    options = gr_options(self.cen_freq, self.bw, self.tx_time, tx_file)
     gr_tx.main(options=options)
     #gr_tx.main(tx_time=self.tx_time, freq=self.cen_freq)
 
@@ -113,7 +114,7 @@ class gr_thread(threading.Thread):
 
     print '[gr_thread] Receiving on: ' + str(self.cen_freq)
 
-    options = gr_options(self.cen_freq, self.rx_time, rx_file)
+    options = gr_options(self.cen_freq, self.bw, self.rx_time, rx_file)
     gr_rx.main(options=options)
     #gr_rx.main(rx_time=self.rx_time)
 
