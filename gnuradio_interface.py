@@ -3,10 +3,9 @@
                                                           Date  : Jun 07 2017
 
     File Name  : gnuradio_interface.py
-    Description: gnuradio_interface calls either rx_2400_r2 or tx_2400_r2
+    Description: gnuradio_interface calls GNURadio generated files
                  depending on configuration to either receive or transmit
-                 data using FSK modulation. It also starts a rx_processor
-                 thread to process either old or live data.
+                 data. 
 ---*-----------------------------------------------------------------------*'''
 
 import gr_modules.ofdm_transmitter as gr_tx
@@ -23,7 +22,18 @@ Config variables
 tx_file = 'C:/Projects/gr-bladerf-utils/io/_send.bin'
 rx_file = 'C:/Projects/gr-bladerf-utils/io/_out'
 
+'''[gr_options]----------------------------------------------------------------
+  Used to mimic options class, to pass variables into GNURadio generated files.
+----------------------------------------------------------------------------'''
 class gr_options():
+
+  '''[gr_thread]---------------------------------------------------------------
+    Initializes gr_options with appropriate variables.
+    freq     - center frequency
+    bw       - bandwidth
+    time     - tx/rx time
+    filename - input/output file
+  --------------------------------------------------------------------------'''
   def __init__(self, freq, bw, time, filename):
     self.center_freq = freq
     self.bandwidth = bw

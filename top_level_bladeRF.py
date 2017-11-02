@@ -3,42 +3,42 @@
                                                           Date  : May 22 2017
 
     File Name  : top_level_bladeRF.py
-    Description: Allows for either transmitting or receiving data using the
+    Description: Used for either transmitting or receiving data using the
                  appropriate GNURadio modules and a BladeRF board. 
                  
-                 .-------------top_level_bladeRF-----------.
-                /     /           |             \           \
-    rx_processor   scanner   blade_rx   gnuradio_interface   hardware
-                                       /                  \         
-                             rx_2400_r2                    tx_2400_r2  
+             .-------------top_level_bladeRF-----------.
+            /     /           |             \           \
+rx_processor   scanner   blade_rx   gnuradio_interface  .--------------------.
+                                             |          | Additional Sensors |
+                      .--------------------------.      |                    |
+                      | GNURadio Generated Files |      | hardware           |
+                      |                          |      |____________________|
+                      | ofdm_transmitter         |         
+                      | ofdm_receiver            |
+                      |__________________________| 
 
-                 - top_level_bladeRF loads the FPGA onto the BladeRF using 
-                   blade_rx. It then begins and maintains all the other 
-                   threads:
-                   - gnuradio_interface
-                   - rx_processor
-                   - scanner
-                   - hardware
-                   It allows for smooth exiting so nothing gets locked up.
+- top_level_bladeRF loads the FPGA onto the BladeRF using blade_rx. It then 
+  starts and maintains all the other threads:
+  - gnuradio_interface
+  - rx_processor
+  - scanner
+  - hardware
+  It allows for smooth handling of exits (including Ctrl+C).
 
-                 - gnuradio_interface calls either rx_2400_r2 or tx_2400_r2
-                   depending on configuration to either receive or transmit
-                   data using FSK modulation. It also starts a rx_processor
-                   thread to process either old or live data.
+- gnuradio_interface calls rx or tx GNURadio schemes depending on configuration
+  to either receive or transmit data using whatever modulation scheme has been
+  implemented. The idea behind this file is to make it modular, being capable of 
+  calling any gnuradio generated files that write to the appropriate file and 
+  implement the main call.
 
-                 - rx_processor processes the data received, including the
-                   bitstream containing communication data, GPS, and anything
-                   else being collected. This can be set to work on old or new
-                   data.
+- rx_processor processes the data received, capable of accessing the bitstream 
+  containing communication data, GPS, and anything else being collected. This 
+  can be set to work on old or new data.
 
-                 - scanner has peak detection and RSSI measuring capability.
+- scanner has peak detection and RSSI measuring capability.
 
-                 - hardware interfaces with the air quality sensor, modified 
-                   slightly from Michael / Christine's code to work with top 
-                   level's callbacks
-
-                 A good portion of this was inspired by and builds on Stephen 
-                 Wayne's FSK GNURadio modules.
+- hardware interfaces with the air quality sensor, modified slightly from 
+  Michael / Christine's code to work with top level's callbacks
 ---*-----------------------------------------------------------------------*'''
 
 import blade_rx
@@ -94,14 +94,15 @@ if air_sensor:
 if rx_process:
   import rx_processor
 
-if len(sys.argv) < 2:
-  print("Usage: python top_level_bladeRF [f] | [tx] | [rx] | [rxnp] | [p] | [m]\n \
+if len(sys.argv) < 3:
+  print("Usage: python top_level_bladeRF [f | tx | rx | rxnp | p | m] <freq>\n \
         \tf    - full duplex (both tx and rx)\n \
         \ttx   - transmit new samples\n \
         \trx   - receive new samples\n \
         \trxnp - receive, but do not process samples\n \
         \tp    - process pre-received samples from in_file\n \
-        \tm    - manual selection\n")
+        \tm    - manual selection\n \
+        freq   - frequency to start at")
   sys.exit(1)
 
 if sys.argv[1] == 'f': #full duplex
@@ -132,13 +133,18 @@ elif sys.argv[1] == 'p': #process only
 elif sys.argv[1] == 'm': #manual mode
   print '[main] Mode: Manual'
 else: #invalid input
-  print("Usage: python top_level_bladeRF [f] | [tx] | [rx] | [rxnp] | [p] | [m]\n \
+  print("Usage: python top_level_bladeRF [f | tx | rx | rxnp | p | m] <freq>\n \
         \tf    - full duplex (both tx and rx)\n \
         \ttx   - transmit new samples\n \
         \trx   - receive new samples\n \
         \trxnp - receive, but do not process samples\n \
         \tp    - process pre-received samples from in_file\n \
-        \tm    - manual selection\n")
+        \tm    - manual selection\n \
+        freq   - frequency to start at")
+  sys.exit(1)
+
+if sys.argv[2] < 300 or sys.argv[2] > 3800:
+  print("Frequency cannot be < 300MHz or > 3.8GHz")
   sys.exit(1)
 
 '''[end_all_threads]-----------------------------------------------------------
