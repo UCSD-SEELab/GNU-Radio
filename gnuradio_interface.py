@@ -3,10 +3,9 @@
                                                           Date  : Jun 07 2017
 
     File Name  : gnuradio_interface.py
-    Description: gnuradio_interface calls either rx_2400_r2 or tx_2400_r2
+    Description: gnuradio_interface calls GNURadio generated files
                  depending on configuration to either receive or transmit
-                 data using FSK modulation. It also starts a rx_processor
-                 thread to process either old or live data.
+                 data. 
 ---*-----------------------------------------------------------------------*'''
 
 import gr_modules.ofdm_transmitter as gr_tx
@@ -23,9 +22,21 @@ Config variables
 tx_file = 'C:/Projects/gr-bladerf-utils/io/_send.bin'
 rx_file = 'C:/Projects/gr-bladerf-utils/io/_out'
 
+'''[gr_options]----------------------------------------------------------------
+  Used to mimic options class, to pass variables into GNURadio generated files.
+----------------------------------------------------------------------------'''
 class gr_options():
-  def __init__(self, freq, time, filename):
+
+  '''[gr_thread]---------------------------------------------------------------
+    Initializes gr_options with appropriate variables.
+    freq     - center frequency
+    bw       - bandwidth
+    time     - tx/rx time
+    filename - input/output file
+  --------------------------------------------------------------------------'''
+  def __init__(self, freq, bw, time, filename):
     self.center_freq = freq
+    self.bandwidth = bw
     self.tx_time = time
     self.rx_time = time
     self.filename = filename
@@ -101,7 +112,7 @@ class gr_thread(threading.Thread):
     post_header = 'ED3'
     write_message(out_files[2], message3, pre_header, post_header)
 
-    options = gr_options(self.cen_freq, self.tx_time, tx_file)
+    options = gr_options(self.cen_freq, self.bw, self.tx_time, tx_file)
     gr_tx.main(options=options)
     #gr_tx.main(tx_time=self.tx_time, freq=self.cen_freq)
 
@@ -113,7 +124,7 @@ class gr_thread(threading.Thread):
 
     print '[gr_thread] Receiving on: ' + str(self.cen_freq)
 
-    options = gr_options(self.cen_freq, self.rx_time, rx_file)
+    options = gr_options(self.cen_freq, self.bw, self.rx_time, rx_file)
     gr_rx.main(options=options)
     #gr_rx.main(rx_time=self.rx_time)
 
