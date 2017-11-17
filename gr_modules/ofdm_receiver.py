@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Receiver
-# Generated: Tue Oct 31 23:31:38 2017
+# Generated: Thu Nov  9 16:34:13 2017
 ##################################################
 
 from gnuradio import analog
@@ -23,7 +23,7 @@ import time
 
 class ofdm_receiver(gr.top_block):
 
-    def __init__(self, bandwidth=5000000, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_out', rx_time=5):
+    def __init__(self, bandwidth=5000000, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_out', rx_time=5, udp_rx_ip='127.0.0.1', udp_rx_port=9001):
         gr.top_block.__init__(self, "Ofdm Receiver")
 
         ##################################################
@@ -33,6 +33,8 @@ class ofdm_receiver(gr.top_block):
         self.center_freq = center_freq
         self.filename = filename
         self.rx_time = rx_time
+        self.udp_rx_ip = udp_rx_ip
+        self.udp_rx_port = udp_rx_port
 
         ##################################################
         # Variables
@@ -63,7 +65,7 @@ class ofdm_receiver(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + 'bladerf=0' )
+        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + '' )
         self.osmosdr_source_0.set_sample_rate(samp_rate_rx)
         self.osmosdr_source_0.set_center_freq(freq, 0)
         self.osmosdr_source_0.set_freq_corr(0, 0)
@@ -101,6 +103,7 @@ class ofdm_receiver(gr.top_block):
         self.digital_crc32_bb_0 = digital.crc32_bb(True, packet_length_tag_key, True)
         self.digital_constellation_decoder_cb_1 = digital.constellation_decoder_cb(payload_mod.base())
         self.digital_constellation_decoder_cb_0 = digital.constellation_decoder_cb(header_mod.base())
+        self.blocks_udp_sink_0 = blocks.udp_sink(gr.sizeof_char*1, udp_rx_ip, udp_rx_port, 1472, True)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(payload_mod.bits_per_symbol(), 8, packet_length_tag_key, True, gr.GR_LSB_FIRST)
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
         self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, filename, False)
@@ -119,6 +122,7 @@ class ofdm_receiver(gr.top_block):
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_packet_headerparser_b_0, 0))
         self.connect((self.digital_constellation_decoder_cb_1, 0), (self.blocks_repack_bits_bb_0, 0))
         self.connect((self.digital_crc32_bb_0, 0), (self.blocks_file_sink_0, 0))
+        self.connect((self.digital_crc32_bb_0, 0), (self.blocks_udp_sink_0, 0))
         self.connect((self.digital_header_payload_demux_0, 0), (self.fft_vxx_0, 0))
         self.connect((self.digital_header_payload_demux_0, 1), (self.fft_vxx_1, 0))
         self.connect((self.digital_ofdm_chanest_vcvc_0, 0), (self.digital_ofdm_frame_equalizer_vcvc_0, 0))
@@ -159,6 +163,18 @@ class ofdm_receiver(gr.top_block):
 
     def set_rx_time(self, rx_time):
         self.rx_time = rx_time
+
+    def get_udp_rx_ip(self):
+        return self.udp_rx_ip
+
+    def set_udp_rx_ip(self, udp_rx_ip):
+        self.udp_rx_ip = udp_rx_ip
+
+    def get_udp_rx_port(self):
+        return self.udp_rx_port
+
+    def set_udp_rx_port(self, udp_rx_port):
+        self.udp_rx_port = udp_rx_port
 
     def get_sps(self):
         return self.sps
@@ -326,6 +342,12 @@ def argument_parser():
     parser.add_option(
         "", "--rx-time", dest="rx_time", type="intx", default=5,
         help="Set rx_time [default=%default]")
+    parser.add_option(
+        "", "--udp-rx-ip", dest="udp_rx_ip", type="string", default='127.0.0.1',
+        help="Set udp_rx_ip [default=%default]")
+    parser.add_option(
+        "", "--udp-rx-port", dest="udp_rx_port", type="intx", default=9001,
+        help="Set udp_rx_port [default=%default]")
     return parser
 
 
@@ -333,7 +355,7 @@ def main(top_block_cls=ofdm_receiver, options=None):
     if options is None:
         options, _ = argument_parser().parse_args()
 
-    tb = top_block_cls(bandwidth=options.bandwidth, center_freq=options.center_freq, filename=options.filename, rx_time=options.rx_time)
+    tb = top_block_cls(bandwidth=options.bandwidth, center_freq=options.center_freq, filename=options.filename, rx_time=options.rx_time, udp_rx_ip=options.udp_rx_ip, udp_rx_port=options.udp_rx_port)
     print '[odfm rx] Freq: ' + str(options.center_freq)
 
     tb.start()
