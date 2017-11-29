@@ -58,7 +58,7 @@ run_time = 10000
 
 #center_freq = 433920000
 center_freq = 440000000
-bandwidth   = 1500000 #TODO currently NOT being used by gnuradio_interface effectively
+bandwidth   = 5000000
 baud_rate   = 50000 #TODO currently NOT being used by gnuradio_interface effectively
 
 #gnuradio_interface parameters
@@ -68,10 +68,11 @@ tx_time = 10000
 rx_time = 10000
 
 udp_rx_ip = "127.0.0.1"
-udp_rx_port = 9001
+udp_rx_port = 9002
 
 udp_tx_ip = "127.0.0.1"
 udp_tx_port = 9000
+udp_repeat = 5
 
 #rx_processor parameters
 rx_process = True
@@ -281,11 +282,12 @@ def main():
         time.sleep(0.1)
 
       print '\n[main] sending filewrite sync'
-      '''
+      
       if tx:
-        print '[main] Tx message:' + message
-        sock.sendto(message, (udp_tx_ip, udp_tx_port))
-      '''
+        print '[main] Tx message:' + message + ' | Repeat:' + str(udp_repeat)
+        #for i in range(udp_repeat):
+        #  sock.sendto(message, (udp_tx_ip, udp_tx_port))
+      
       for thread in filewrite_subscribers:
         thread.filewrite_callback()
       

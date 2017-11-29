@@ -224,5 +224,5 @@ class blade_rf_sdr():
 if __name__ == '__main__':
     sdr = blade_rf_sdr(1)
     #sdr.set_bandwidth('all', 28)
-    sdr.set_center_freq('all', 2437)
+    #sdr.set_center_freq('all', 2437)
     sdr.run(sdr)

@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Receiver
-# Generated: Thu Nov  9 16:34:13 2017
+# Generated: Tue Nov 28 16:31:31 2017
 ##################################################
 
 from gnuradio import analog
@@ -54,8 +54,8 @@ class ofdm_receiver(gr.top_block):
         self.samp_rate_rx = samp_rate_rx = 5000000
         self.samp_rate_1 = samp_rate_1 = 10000
         self.samp_rate_0 = samp_rate_0 = int(baud_rate * sps)
-        self.rx_vga_gain = rx_vga_gain = 30
-        self.rx_lna_gain = rx_lna_gain = 6
+        self.rx_vga_gain = rx_vga_gain = 7
+        self.rx_lna_gain = rx_lna_gain = 0
         self.payload_equalizer = payload_equalizer = digital.ofdm_equalizer_simpledfe(fft_len, payload_mod.base(), occupied_carriers, pilot_carriers, pilot_symbols, 1)
         self.packet_len = packet_len = 96
         self.header_formatter = header_formatter = digital.packet_header_ofdm(occupied_carriers, n_syms=1, len_tag_key=packet_length_tag_key, frame_len_tag_key=length_tag_key, bits_per_header_sym=header_mod.bits_per_symbol(), bits_per_payload_sym=payload_mod.bits_per_symbol(), scramble_header=False)
@@ -356,16 +356,7 @@ def main(top_block_cls=ofdm_receiver, options=None):
         options, _ = argument_parser().parse_args()
 
     tb = top_block_cls(bandwidth=options.bandwidth, center_freq=options.center_freq, filename=options.filename, rx_time=options.rx_time, udp_rx_ip=options.udp_rx_ip, udp_rx_port=options.udp_rx_port)
-    print '[odfm rx] Freq: ' + str(options.center_freq)
-
     tb.start()
-    start_time = time.time()
-    #count = 0
-
-    while (time.time() - start_time < options.rx_time):
-        time.sleep(0.1)
-
-    tb.stop()
     tb.wait()
 
 
