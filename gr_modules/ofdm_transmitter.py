@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Transmitter
-# Generated: Tue Oct 31 23:31:51 2017
+# Generated: Tue Nov 28 16:20:40 2017
 ##################################################
 
 from gnuradio import blocks
@@ -21,16 +21,18 @@ import time
 
 class ofdm_transmitter(gr.top_block):
 
-    def __init__(self, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_send.bin', tx_time=5, bandwidth=5000000):
+    def __init__(self, bandwidth=5000000, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_send.bin', tx_time=5, udp_tx_ip='127.0.0.1', udp_tx_port=9000):
         gr.top_block.__init__(self, "Ofdm Transmitter")
 
         ##################################################
         # Parameters
         ##################################################
+        self.bandwidth = bandwidth
         self.center_freq = center_freq
         self.filename = filename
         self.tx_time = tx_time
-        self.bandwidth = bandwidth
+        self.udp_tx_ip = udp_tx_ip
+        self.udp_tx_port = udp_tx_port
 
         ##################################################
         # Variables
@@ -58,7 +60,7 @@ class ofdm_transmitter(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.osmosdr_sink_0 = osmosdr.sink( args="numchan=" + str(1) + " " + 'bladerf=0' )
+        self.osmosdr_sink_0 = osmosdr.sink( args="numchan=" + str(1) + " " + '' )
         self.osmosdr_sink_0.set_sample_rate(samp_rate_tx)
         self.osmosdr_sink_0.set_center_freq(freq, 0)
         self.osmosdr_sink_0.set_freq_corr(0, 0)
@@ -75,24 +77,24 @@ class ofdm_transmitter(gr.top_block):
         self.digital_crc32_bb_0 = digital.crc32_bb(False, length_tag_key, True)
         self.digital_chunks_to_symbols_xx_0_0 = digital.chunks_to_symbols_bc((payload_mod.points()), 1)
         self.digital_chunks_to_symbols_xx_0 = digital.chunks_to_symbols_bc((header_mod.points()), 1)
+        self.blocks_udp_source_0 = blocks.udp_source(gr.sizeof_char*1, udp_tx_ip, udp_tx_port, 1472, True)
         self.blocks_tagged_stream_mux_0 = blocks.tagged_stream_mux(gr.sizeof_gr_complex*1, length_tag_key, 0)
         self.blocks_tag_gate_0 = blocks.tag_gate(gr.sizeof_gr_complex * 1, False)
         self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_char, 1, packet_len, length_tag_key)
         self.blocks_repack_bits_bb_0_0 = blocks.repack_bits_bb(8, 1, length_tag_key, False, gr.GR_LSB_FIRST)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(8, payload_mod.bits_per_symbol(), length_tag_key, False, gr.GR_LSB_FIRST)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.05, ))
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, filename, True)
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_file_source_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.blocks_tag_gate_0, 0))
         self.connect((self.blocks_repack_bits_bb_0, 0), (self.digital_chunks_to_symbols_xx_0_0, 0))
         self.connect((self.blocks_repack_bits_bb_0_0, 0), (self.digital_chunks_to_symbols_xx_0, 0))
         self.connect((self.blocks_stream_to_tagged_stream_0, 0), (self.digital_crc32_bb_0, 0))
         self.connect((self.blocks_tag_gate_0, 0), (self.osmosdr_sink_0, 0))
         self.connect((self.blocks_tagged_stream_mux_0, 0), (self.digital_ofdm_carrier_allocator_cvc_0, 0))
+        self.connect((self.blocks_udp_source_0, 0), (self.blocks_stream_to_tagged_stream_0, 0))
         self.connect((self.digital_chunks_to_symbols_xx_0, 0), (self.blocks_tagged_stream_mux_0, 0))
         self.connect((self.digital_chunks_to_symbols_xx_0_0, 0), (self.blocks_tagged_stream_mux_0, 1))
         self.connect((self.digital_crc32_bb_0, 0), (self.blocks_repack_bits_bb_0, 0))
@@ -101,6 +103,13 @@ class ofdm_transmitter(gr.top_block):
         self.connect((self.digital_ofdm_cyclic_prefixer_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.digital_protocol_formatter_bb_0, 0), (self.blocks_repack_bits_bb_0_0, 0))
         self.connect((self.fft_vxx_0, 0), (self.digital_ofdm_cyclic_prefixer_0, 0))
+
+    def get_bandwidth(self):
+        return self.bandwidth
+
+    def set_bandwidth(self, bandwidth):
+        self.bandwidth = bandwidth
+        self.osmosdr_sink_0.set_bandwidth(self.bandwidth, 0)
 
     def get_center_freq(self):
         return self.center_freq
@@ -114,7 +123,6 @@ class ofdm_transmitter(gr.top_block):
 
     def set_filename(self, filename):
         self.filename = filename
-        self.blocks_file_source_0.open(self.filename, True)
 
     def get_tx_time(self):
         return self.tx_time
@@ -122,12 +130,17 @@ class ofdm_transmitter(gr.top_block):
     def set_tx_time(self, tx_time):
         self.tx_time = tx_time
 
-    def get_bandwidth(self):
-        return self.bandwidth
+    def get_udp_tx_ip(self):
+        return self.udp_tx_ip
 
-    def set_bandwidth(self, bandwidth):
-        self.bandwidth = bandwidth
-        self.osmosdr_sink_0.set_bandwidth(self.bandwidth, 0)
+    def set_udp_tx_ip(self, udp_tx_ip):
+        self.udp_tx_ip = udp_tx_ip
+
+    def get_udp_tx_port(self):
+        return self.udp_tx_port
+
+    def set_udp_tx_port(self, udp_tx_port):
+        self.udp_tx_port = udp_tx_port
 
     def get_samp_rate_tx(self):
         return self.samp_rate_tx
@@ -256,6 +269,9 @@ class ofdm_transmitter(gr.top_block):
 def argument_parser():
     parser = OptionParser(usage="%prog: [options]", option_class=eng_option)
     parser.add_option(
+        "", "--bandwidth", dest="bandwidth", type="intx", default=5000000,
+        help="Set bandwidth [default=%default]")
+    parser.add_option(
         "", "--center-freq", dest="center_freq", type="intx", default=440000000,
         help="Set center_freq [default=%default]")
     parser.add_option(
@@ -265,8 +281,11 @@ def argument_parser():
         "", "--tx-time", dest="tx_time", type="intx", default=5,
         help="Set tx_time [default=%default]")
     parser.add_option(
-        "", "--bandwidth", dest="bandwidth", type="intx", default=5000000,
-        help="Set bandwidth [default=%default]")
+        "", "--udp-tx-ip", dest="udp_tx_ip", type="string", default='127.0.0.1',
+        help="Set udp_tx_ip [default=%default]")
+    parser.add_option(
+        "", "--udp-tx-port", dest="udp_tx_port", type="intx", default=9000,
+        help="Set udp_tx_port [default=%default]")
     return parser
 
 
@@ -274,7 +293,7 @@ def main(top_block_cls=ofdm_transmitter, options=None):
     if options is None:
         options, _ = argument_parser().parse_args()
 
-    tb = top_block_cls(center_freq=options.center_freq, filename=options.filename, tx_time=options.tx_time, bandwidth=options.bandwidth)
+    tb = top_block_cls(bandwidth=options.bandwidth, center_freq=options.center_freq, filename=options.filename, tx_time=options.tx_time, udp_tx_ip=options.udp_tx_ip, udp_tx_port=options.udp_tx_port)
     print '[odfm tx] Freq: ' + str(options.center_freq)
 
     tb.start()

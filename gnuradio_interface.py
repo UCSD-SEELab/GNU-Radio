@@ -19,7 +19,7 @@ import time
 Config variables
 ----------------------------------------------------------------------------'''
 #transmit variables
-tx_file = 'C:/Projects/gr-bladerf-utils/io/_send.bin'
+#tx_file = 'C:/Projects/gr-bladerf-utils/io/_send.bin'
 rx_file = 'C:/Projects/gr-bladerf-utils/io/_out'
 
 '''[gr_options]----------------------------------------------------------------
@@ -34,12 +34,16 @@ class gr_options():
     time     - tx/rx time
     filename - input/output file
   --------------------------------------------------------------------------'''
-  def __init__(self, freq, bw, time, filename):
+  def __init__(self, freq, bw, time, tx_ip, tx_port, rx_ip, rx_port):
     self.center_freq = freq
     self.bandwidth = bw
     self.tx_time = time
     self.rx_time = time
-    self.filename = filename
+    self.udp_tx_ip = tx_ip
+    self.udp_tx_port = tx_port
+    self.udp_rx_ip = rx_ip
+    self.udp_rx_port = rx_port
+    self.filename = rx_file
 
 '''[gr_thread]-----------------------------------------------------------------
   Gnuradio interface which allows for callbacks to be made, parallelizing work
@@ -53,7 +57,7 @@ class gr_thread(threading.Thread):
     cen_freq  - center frequency to rx/tx at
     baud_rate - bitrate of writing
   --------------------------------------------------------------------------'''
-  def __init__(self, tx, rx, tx_time, rx_time, cen_freq, bw, baud_rate):
+  def __init__(self, tx, rx, tx_time, rx_time, cen_freq, bw, baud_rate, tx_ip, tx_port, rx_ip, rx_port):
     super(gr_thread, self).__init__()
     self.daemon = True
     self.callback = False
@@ -64,6 +68,10 @@ class gr_thread(threading.Thread):
     self.cen_freq = cen_freq
     self.bw = bw
     self.baud_rate = baud_rate
+    self.tx_ip = tx_ip
+    self.tx_port = tx_port
+    self.rx_ip = rx_ip
+    self.rx_port = rx_port
 
   '''[end_callback]------------------------------------------------------------
     Ends thread
@@ -99,7 +107,7 @@ class gr_thread(threading.Thread):
     for i in range(1):
       for j in range(ord('a'), ord('z') + 1):
         message3.append(j)
-
+    
     pre_header = 'SL1'
     post_header = 'ED1'
     write_message(out_files[0], message1, pre_header, post_header)
@@ -112,9 +120,8 @@ class gr_thread(threading.Thread):
     post_header = 'ED3'
     write_message(out_files[2], message3, pre_header, post_header)
 
-    options = gr_options(self.cen_freq, self.bw, self.tx_time, tx_file)
+    options = gr_options(self.cen_freq, self.bw, self.tx_time, self.tx_ip, self.tx_port, self.rx_ip, self.rx_port)
     gr_tx.main(options=options)
-    #gr_tx.main(tx_time=self.tx_time, freq=self.cen_freq)
 
   '''[rx]----------------------------------------------------------------------
     Receives to _out.bin, which can be accessed while it is being written to
@@ -124,9 +131,8 @@ class gr_thread(threading.Thread):
 
     print '[gr_thread] Receiving on: ' + str(self.cen_freq)
 
-    options = gr_options(self.cen_freq, self.bw, self.rx_time, rx_file)
+    options = gr_options(self.cen_freq, self.bw, self.rx_time, self.tx_ip, self.tx_port, self.rx_ip, self.rx_port)
     gr_rx.main(options=options)
-    #gr_rx.main(rx_time=self.rx_time)
 
   '''[run]---------------------------------------------------------------------
     Starts when thread is run.

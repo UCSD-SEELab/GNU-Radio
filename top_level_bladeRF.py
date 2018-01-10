@@ -45,6 +45,7 @@ import blade_rx
 import bladeRF_scanner
 import gnuradio_interface
 
+import socket
 import sys
 import time
 
@@ -56,8 +57,8 @@ Config variables
 run_time = 10000
 
 #center_freq = 433920000
-center_freq = 440000000
-bandwidth   = 1500000 #TODO currently NOT being used by gnuradio_interface effectively
+center_freq = 433000000
+bandwidth   = 1500000
 baud_rate   = 50000 #TODO currently NOT being used by gnuradio_interface effectively
 
 #gnuradio_interface parameters
@@ -65,6 +66,13 @@ tx = False
 rx = True
 tx_time = 10000
 rx_time = 10000
+
+udp_rx_ip = "127.0.0.1"
+udp_rx_port = 9002
+
+udp_tx_ip = "127.0.0.1"
+udp_tx_port = 9000
+udp_repeat = 5
 
 #rx_processor parameters
 rx_process = True
@@ -94,58 +102,65 @@ if air_sensor:
 if rx_process:
   import rx_processor
 
-if len(sys.argv) < 3:
-  print("Usage: python top_level_bladeRF [f | tx | rx | rxnp | p | m] <freq>\n \
-        \tf    - full duplex (both tx and rx)\n \
-        \ttx   - transmit new samples\n \
-        \trx   - receive new samples\n \
-        \trxnp - receive, but do not process samples\n \
-        \tp    - process pre-received samples from in_file\n \
-        \tm    - manual selection\n \
-        freq   - frequency to start at")
-  sys.exit(1)
+'''[parse_args]----------------------------------------------------------------
+  Validates command line args, then sets parameters as appropriate
+----------------------------------------------------------------------------'''
+def parse_args(argv):
+  global tx, rx, rx_process, center_freq
+  if len(sys.argv) < 3:
+    print("[main] Usage: python top_level_bladeRF [f | tx | rx | rxnp | p | m] <freq MHz>\n \
+          \tf    - full duplex (both tx and rx)\n \
+          \ttx   - transmit new samples\n \
+          \trx   - receive new samples\n \
+          \trxnp - receive, but do not process samples\n \
+          \tp    - process pre-received samples from in_file\n \
+          \tm    - manual selection\n \
+          \tfreq - frequency to start at")
+    sys.exit(1)
 
-if sys.argv[1] == 'f': #full duplex
-  print '[main] Mode: Full Duplex'
-  tx = True
-  rx = True
-  rx_process = True
-elif sys.argv[1] == 'tx': #tx only
-  print '[main] Mode: TX'
-  tx = True
-  rx = False
-  rx_process = False
-elif sys.argv[1] == 'rx': #rx only
-  print '[main] Mode: RX'
-  tx = False
-  rx = True
-  rx_process = True
-elif sys.argv[1] == 'rxnp': #rx samples without processing
-  print '[main] Mode: RX without processing'
-  tx = False
-  rx = True
-  rx_process = False
-elif sys.argv[1] == 'p': #process only
-  print '[main] Mode: Processing only'
-  tx = False
-  rx = False
-  rx_process = True
-elif sys.argv[1] == 'm': #manual mode
-  print '[main] Mode: Manual'
-else: #invalid input
-  print("Usage: python top_level_bladeRF [f | tx | rx | rxnp | p | m] <freq>\n \
-        \tf    - full duplex (both tx and rx)\n \
-        \ttx   - transmit new samples\n \
-        \trx   - receive new samples\n \
-        \trxnp - receive, but do not process samples\n \
-        \tp    - process pre-received samples from in_file\n \
-        \tm    - manual selection\n \
-        freq   - frequency to start at")
-  sys.exit(1)
+  if sys.argv[1] == 'f': #full duplex
+    print '[main] Mode:\tFull Duplex'
+    tx = True
+    rx = True
+    rx_process = True
+  elif sys.argv[1] == 'tx': #tx only
+    print '[main] Mode:\tTX'
+    tx = True
+    rx = False
+    rx_process = False
+  elif sys.argv[1] == 'rx': #rx only
+    print '[main] Mode:\tRX'
+    tx = False
+    rx = True
+    rx_process = True
+  elif sys.argv[1] == 'rxnp': #rx samples without processing
+    print '[main] Mode:\tRX without processing'
+    tx = False
+    rx = True
+    rx_process = False
+  elif sys.argv[1] == 'p': #process only
+    print '[main] Mode:\tProcessing only'
+    tx = False
+    rx = False
+    rx_process = True
+  elif sys.argv[1] == 'm': #manual mode
+    print '[main] Mode:\tManual'
+  else: #invalid input
+    print("[main] Usage: python top_level_bladeRF [f | tx | rx | rxnp | p | m] <freq>\n \
+          \tf    - full duplex (both tx and rx)\n \
+          \ttx   - transmit new samples\n \
+          \trx   - receive new samples\n \
+          \trxnp - receive, but do not process samples\n \
+          \tp    - process pre-received samples from in_file\n \
+          \tm    - manual selection\n \
+          \tfreq - frequency to start at")
+    sys.exit(1)
 
-if sys.argv[2] < 300 or sys.argv[2] > 3800:
-  print("Frequency cannot be < 300MHz or > 3.8GHz")
-  sys.exit(1)
+  if float(sys.argv[2]) < 300 or float(sys.argv[2]) > 3800:
+    print("[main] Frequency cannot be < 300MHz or > 3.8GHz")
+    sys.exit(1)
+
+  center_freq = float(sys.argv[2]) * 1000000
 
 '''[end_all_threads]-----------------------------------------------------------
   Sends an end_callback to all threads in thread list
@@ -166,6 +181,8 @@ def main():
 
   global center_freq
 
+  parse_args(sys.argv)
+
   try:
     #init threads
     print '[main] Tx:\t' + str(tx)
@@ -173,7 +190,6 @@ def main():
     print '[main] Rx_proc:\t' + str(rx_process)
     print '[main] Scanner:\t' + str(scan)
     print '[main] Aq_sen:\t' + str(air_sensor)
-    print '\n'
 
     threads = []
     filewrite_subscribers = []
@@ -184,21 +200,46 @@ def main():
       sdr = blade_rx.blade_rf_sdr(1)
 
       print '[main] Initializing GNURadio interface'
-      gr = gnuradio_interface.gr_thread(tx, rx, tx_time, rx_time, center_freq, bandwidth, baud_rate)
+      gr = gnuradio_interface.gr_thread(
+        tx, 
+        rx, 
+        tx_time, 
+        rx_time, 
+        center_freq, 
+        bandwidth, 
+        baud_rate,
+        udp_tx_ip,
+        udp_tx_port,
+        udp_rx_ip,
+        udp_rx_port)
     
     if scan:
       print '[main] Initializing scanner'
-      scanner = bladeRF_scanner.bladeRF_scanner(fft_file, center_freq, bandwidth, section_bw, fft_size)
+      scanner = bladeRF_scanner.bladeRF_scanner(
+        fft_file, 
+        center_freq,
+        bandwidth, 
+        section_bw, 
+        fft_size
+      )
 
     if rx_process:
       print '[main] Initializing rx processor'
-      rx_p = rx_processor.rx_processor(in_file, pre_headers, post_headers, rx, gps_tagging)
+      rx_p = rx_processor.rx_processor(
+        in_file, 
+        pre_headers, 
+        post_headers, 
+        rx, 
+        gps_tagging
+      )
 
     if air_sensor:
       print '[main] Initializing hardware'
       air_q_s = hardware.AirSensor()
 
-    #get list of best frequencies
+    #sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    #get list of best frequencies if necessary
     if scan_best_freqs:
       #best_freqs = bladeRF_scanner.main()
       #TODO need to fix above line, main is deprecated
@@ -209,24 +250,31 @@ def main():
 
       #do something with it
 
+    # Start gnuradio interface if necessary
     if tx or rx:
       gr.start()
       threads.append(gr)
 
+    # Start scanner if necessary
     if scan:
       scanner.start()
       threads.append(scanner)
       filewrite_subscribers.append(scanner)
 
+    # Start rx processor if necessary
     if rx_process:
       rx_p.start()
       threads.append(rx_p)
       filewrite_subscribers.append(rx_p)
 
+    # Start air sensor if necessary
     #if air_sensor:
     #  air_q_s.start()
     #  threads.append(air_q_s)
     #  filewrite_subscribers.append(air_q_s)
+
+    # Initialize tx socket if transmitting
+    message = "[DEV] [main] hi!"
 
     start_time = time.time()
     while time.time() - start_time < run_time:
@@ -236,7 +284,12 @@ def main():
         time.sleep(0.1)
 
       print '\n[main] sending filewrite sync'
-
+      
+      if tx:
+        print '[main] Tx message:' + message + ' | Repeat:' + str(udp_repeat)
+        #for i in range(udp_repeat):
+        #  sock.sendto(message, (udp_tx_ip, udp_tx_port))
+      
       for thread in filewrite_subscribers:
         thread.filewrite_callback()
       
