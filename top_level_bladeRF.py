@@ -57,8 +57,8 @@ Config variables
 run_time = 10000
 
 #center_freq = 433920000
-center_freq = 440000000
-bandwidth   = 5000000
+center_freq = 433000000
+bandwidth   = 1500000
 baud_rate   = 50000 #TODO currently NOT being used by gnuradio_interface effectively
 
 #gnuradio_interface parameters
@@ -106,7 +106,7 @@ if rx_process:
   Validates command line args, then sets parameters as appropriate
 ----------------------------------------------------------------------------'''
 def parse_args(argv):
-  global tx, rx, rx_process
+  global tx, rx, rx_process, center_freq
   if len(sys.argv) < 3:
     print("[main] Usage: python top_level_bladeRF [f | tx | rx | rxnp | p | m] <freq MHz>\n \
           \tf    - full duplex (both tx and rx)\n \
@@ -159,6 +159,8 @@ def parse_args(argv):
   if float(sys.argv[2]) < 300 or float(sys.argv[2]) > 3800:
     print("[main] Frequency cannot be < 300MHz or > 3.8GHz")
     sys.exit(1)
+
+  center_freq = float(sys.argv[2]) * 1000000
 
 '''[end_all_threads]-----------------------------------------------------------
   Sends an end_callback to all threads in thread list

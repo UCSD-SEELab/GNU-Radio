@@ -54,8 +54,8 @@ class ofdm_receiver(gr.top_block):
         self.samp_rate_rx = samp_rate_rx = 5000000
         self.samp_rate_1 = samp_rate_1 = 10000
         self.samp_rate_0 = samp_rate_0 = int(baud_rate * sps)
-        self.rx_vga_gain = rx_vga_gain = 7
-        self.rx_lna_gain = rx_lna_gain = 0
+        self.rx_vga_gain = rx_vga_gain = 30
+        self.rx_lna_gain = rx_lna_gain = 6
         self.payload_equalizer = payload_equalizer = digital.ofdm_equalizer_simpledfe(fft_len, payload_mod.base(), occupied_carriers, pilot_carriers, pilot_symbols, 1)
         self.packet_len = packet_len = 96
         self.header_formatter = header_formatter = digital.packet_header_ofdm(occupied_carriers, n_syms=1, len_tag_key=packet_length_tag_key, frame_len_tag_key=length_tag_key, bits_per_header_sym=header_mod.bits_per_symbol(), bits_per_payload_sym=payload_mod.bits_per_symbol(), scramble_header=False)
