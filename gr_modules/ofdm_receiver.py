@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Receiver
-# Generated: Tue Nov 28 16:31:31 2017
+# Generated: Wed Feb 28 02:15:52 2018
 ##################################################
 
 from gnuradio import analog
@@ -23,7 +23,7 @@ import time
 
 class ofdm_receiver(gr.top_block):
 
-    def __init__(self, bandwidth=5000000, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_out', rx_time=5, udp_rx_ip='127.0.0.1', udp_rx_port=9001):
+    def __init__(self, bandwidth=1500000, center_freq=1700000000, filename='C:/Projects/gr-bladerf-utils/io/_out', rx_time=5, udp_rx_ip='127.0.0.1', udp_rx_port=9002, rx_vga_gain=0, rx_lna_gain=0):
         gr.top_block.__init__(self, "Ofdm Receiver")
 
         ##################################################
@@ -35,6 +35,8 @@ class ofdm_receiver(gr.top_block):
         self.rx_time = rx_time
         self.udp_rx_ip = udp_rx_ip
         self.udp_rx_port = udp_rx_port
+        self.rx_vga_gain = rx_vga_gain
+        self.rx_lna_gain = rx_lna_gain
 
         ##################################################
         # Variables
@@ -51,11 +53,9 @@ class ofdm_receiver(gr.top_block):
         self.baud_rate = baud_rate = 2490
         self.sync_word2 = sync_word2 = [0j, 0j, 0j, 0j, 0j, 0j, (-1+0j), (-1+0j), (-1+0j), (-1+0j), (1+0j), (1+0j), (-1+0j), (-1+0j), (-1+0j), (1+0j), (-1+0j), (1+0j), (1+0j), (1 +0j), (1+0j), (1+0j), (-1+0j), (-1+0j), (-1+0j), (-1+0j), (-1+0j), (1+0j), (-1+0j), (-1+0j), (1+0j), (-1+0j), 0j, (1+0j), (-1+0j), (1+0j), (1+0j), (1+0j), (-1+0j), (1+0j), (1+0j), (1+0j), (-1+0j), (1+0j), (1+0j), (1+0j), (1+0j), (-1+0j), (1+0j), (-1+0j), (-1+0j), (-1+0j), (1+0j), (-1+0j), (1+0j), (-1+0j), (-1+0j), (-1+0j), (-1+0j), 0j, 0j, 0j, 0j, 0j]
         self.sync_word1 = sync_word1 = [0., 0., 0., 0., 0., 0., 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., -1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., -1.41421356, 0., -1.41421356, 0., -1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 1.41421356, 0., -1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 1.41421356, 0., 0., 0., 0., 0., 0.]
-        self.samp_rate_rx = samp_rate_rx = 5000000
+        self.samp_rate_rx = samp_rate_rx = 1500000
         self.samp_rate_1 = samp_rate_1 = 10000
         self.samp_rate_0 = samp_rate_0 = int(baud_rate * sps)
-        self.rx_vga_gain = rx_vga_gain = 30
-        self.rx_lna_gain = rx_lna_gain = 6
         self.payload_equalizer = payload_equalizer = digital.ofdm_equalizer_simpledfe(fft_len, payload_mod.base(), occupied_carriers, pilot_carriers, pilot_symbols, 1)
         self.packet_len = packet_len = 96
         self.header_formatter = header_formatter = digital.packet_header_ofdm(occupied_carriers, n_syms=1, len_tag_key=packet_length_tag_key, frame_len_tag_key=length_tag_key, bits_per_header_sym=header_mod.bits_per_symbol(), bits_per_payload_sym=payload_mod.bits_per_symbol(), scramble_header=False)
@@ -106,8 +106,6 @@ class ofdm_receiver(gr.top_block):
         self.blocks_udp_sink_0 = blocks.udp_sink(gr.sizeof_char*1, udp_rx_ip, udp_rx_port, 1472, True)
         self.blocks_repack_bits_bb_0 = blocks.repack_bits_bb(payload_mod.bits_per_symbol(), 8, packet_length_tag_key, True, gr.GR_LSB_FIRST)
         self.blocks_multiply_xx_0 = blocks.multiply_vcc(1)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, filename, False)
-        self.blocks_file_sink_0.set_unbuffered(True)
         self.blocks_delay_0 = blocks.delay(gr.sizeof_gr_complex*1, fft_len+fft_len/4)
         self.analog_frequency_modulator_fc_0 = analog.frequency_modulator_fc(-2.0/fft_len)
 
@@ -121,7 +119,6 @@ class ofdm_receiver(gr.top_block):
         self.connect((self.blocks_repack_bits_bb_0, 0), (self.digital_crc32_bb_0, 0))
         self.connect((self.digital_constellation_decoder_cb_0, 0), (self.digital_packet_headerparser_b_0, 0))
         self.connect((self.digital_constellation_decoder_cb_1, 0), (self.blocks_repack_bits_bb_0, 0))
-        self.connect((self.digital_crc32_bb_0, 0), (self.blocks_file_sink_0, 0))
         self.connect((self.digital_crc32_bb_0, 0), (self.blocks_udp_sink_0, 0))
         self.connect((self.digital_header_payload_demux_0, 0), (self.fft_vxx_0, 0))
         self.connect((self.digital_header_payload_demux_0, 1), (self.fft_vxx_1, 0))
@@ -156,7 +153,6 @@ class ofdm_receiver(gr.top_block):
 
     def set_filename(self, filename):
         self.filename = filename
-        self.blocks_file_sink_0.open(self.filename)
 
     def get_rx_time(self):
         return self.rx_time
@@ -175,6 +171,20 @@ class ofdm_receiver(gr.top_block):
 
     def set_udp_rx_port(self, udp_rx_port):
         self.udp_rx_port = udp_rx_port
+
+    def get_rx_vga_gain(self):
+        return self.rx_vga_gain
+
+    def set_rx_vga_gain(self, rx_vga_gain):
+        self.rx_vga_gain = rx_vga_gain
+        self.osmosdr_source_0.set_bb_gain(self.rx_vga_gain, 0)
+
+    def get_rx_lna_gain(self):
+        return self.rx_lna_gain
+
+    def set_rx_lna_gain(self, rx_lna_gain):
+        self.rx_lna_gain = rx_lna_gain
+        self.osmosdr_source_0.set_gain(self.rx_lna_gain, 0)
 
     def get_sps(self):
         return self.sps
@@ -282,20 +292,6 @@ class ofdm_receiver(gr.top_block):
     def set_samp_rate_0(self, samp_rate_0):
         self.samp_rate_0 = samp_rate_0
 
-    def get_rx_vga_gain(self):
-        return self.rx_vga_gain
-
-    def set_rx_vga_gain(self, rx_vga_gain):
-        self.rx_vga_gain = rx_vga_gain
-        self.osmosdr_source_0.set_bb_gain(self.rx_vga_gain, 0)
-
-    def get_rx_lna_gain(self):
-        return self.rx_lna_gain
-
-    def set_rx_lna_gain(self, rx_lna_gain):
-        self.rx_lna_gain = rx_lna_gain
-        self.osmosdr_source_0.set_gain(self.rx_lna_gain, 0)
-
     def get_payload_equalizer(self):
         return self.payload_equalizer
 
@@ -331,10 +327,10 @@ class ofdm_receiver(gr.top_block):
 def argument_parser():
     parser = OptionParser(usage="%prog: [options]", option_class=eng_option)
     parser.add_option(
-        "", "--bandwidth", dest="bandwidth", type="intx", default=5000000,
+        "", "--bandwidth", dest="bandwidth", type="intx", default=1500000,
         help="Set bandwidth [default=%default]")
     parser.add_option(
-        "-f", "--center-freq", dest="center_freq", type="intx", default=440000000,
+        "-f", "--center-freq", dest="center_freq", type="intx", default=1700000000,
         help="Set center_freq [default=%default]")
     parser.add_option(
         "", "--filename", dest="filename", type="string", default='C:/Projects/gr-bladerf-utils/io/_out',
@@ -346,7 +342,7 @@ def argument_parser():
         "", "--udp-rx-ip", dest="udp_rx_ip", type="string", default='127.0.0.1',
         help="Set udp_rx_ip [default=%default]")
     parser.add_option(
-        "", "--udp-rx-port", dest="udp_rx_port", type="intx", default=9001,
+        "", "--udp-rx-port", dest="udp_rx_port", type="intx", default=9002,
         help="Set udp_rx_port [default=%default]")
     return parser
 

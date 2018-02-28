@@ -23,6 +23,8 @@ print "message:", MESSAGE
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 
+MESSAGE = MESSAGE.ljust(96, ' ')
+print("Message len:", len(MESSAGE))
 try:
   #start_time = time.time()
   #while time.time() - start_time < 20:
@@ -33,6 +35,7 @@ try:
     while(time.time() - start_time < sleep_time):
       time.sleep(sleep_time / 10)
     sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
+    #time.sleep(1)
 
 except KeyboardInterrupt:
   print 'Ctrl+c received.'

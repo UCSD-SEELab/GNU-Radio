@@ -11,9 +11,8 @@
 import gr_modules.ofdm_transmitter as gr_tx
 import gr_modules.ofdm_receiver as gr_rx
 
-import struct
 import threading
-import time
+#import time
 
 '''----------------------------------------------------------------------------
 Config variables
@@ -88,6 +87,7 @@ class gr_thread(threading.Thread):
   def tx_new(self):
     print '[gr_thread] Transmitting on: ' + str(self.cen_freq)
 
+    '''
     out_files = []
     out_files.append('io/_send1.bin')
     out_files.append('io/_send2.bin')
@@ -119,6 +119,7 @@ class gr_thread(threading.Thread):
     pre_header = 'SL3'
     post_header = 'ED3'
     write_message(out_files[2], message3, pre_header, post_header)
+    '''
 
     options = gr_options(self.cen_freq, self.bw, self.tx_time, self.tx_ip, self.tx_port, self.rx_ip, self.rx_port)
     gr_tx.main(options=options)
@@ -138,7 +139,7 @@ class gr_thread(threading.Thread):
     Starts when thread is run.
   --------------------------------------------------------------------------'''
   def run(self):
-    print '[gr_thread] Initialized'
+    print '[gr_thread] Init'
     if self.tx:
       self.tx_new()
     elif self.rx:
@@ -168,6 +169,7 @@ def write_message(file, message, pre_header, post_header):
   print ba
   print ''
 
+  import struct
   with open(file, 'wb') as f:
     f.write(pre_header)
     f.write(struct.pack('B', checksum))
