@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Ofdm Transmitter
-# Generated: Tue Nov 28 16:20:40 2017
+# Generated: Wed Feb  7 14:57:49 2018
 ##################################################
 
 from gnuradio import blocks
@@ -21,7 +21,7 @@ import time
 
 class ofdm_transmitter(gr.top_block):
 
-    def __init__(self, bandwidth=5000000, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_send.bin', tx_time=5, udp_tx_ip='127.0.0.1', udp_tx_port=9000):
+    def __init__(self, bandwidth=1500000, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_send.bin', tx_time=5, udp_tx_ip='127.0.0.1', udp_tx_port=9000):
         gr.top_block.__init__(self, "Ofdm Transmitter")
 
         ##################################################
@@ -37,7 +37,7 @@ class ofdm_transmitter(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate_tx = samp_rate_tx = 5000000
+        self.samp_rate_tx = samp_rate_tx = bandwidth
         self.occupied_carriers = occupied_carriers = (range(-26, -21) + range(-20, -7) + range(-6, 0) + range(1, 7) + range(8, 21) + range(22, 27),)
         self.length_tag_key = length_tag_key = "packet_len"
         self.txvga2 = txvga2 = 25
@@ -109,6 +109,7 @@ class ofdm_transmitter(gr.top_block):
 
     def set_bandwidth(self, bandwidth):
         self.bandwidth = bandwidth
+        self.set_samp_rate_tx(self.bandwidth)
         self.osmosdr_sink_0.set_bandwidth(self.bandwidth, 0)
 
     def get_center_freq(self):
@@ -269,7 +270,7 @@ class ofdm_transmitter(gr.top_block):
 def argument_parser():
     parser = OptionParser(usage="%prog: [options]", option_class=eng_option)
     parser.add_option(
-        "", "--bandwidth", dest="bandwidth", type="intx", default=5000000,
+        "", "--bandwidth", dest="bandwidth", type="intx", default=1500000,
         help="Set bandwidth [default=%default]")
     parser.add_option(
         "", "--center-freq", dest="center_freq", type="intx", default=440000000,
@@ -304,7 +305,6 @@ def main(top_block_cls=ofdm_transmitter, options=None):
 
     tb.stop()
     tb.wait()
-
 
 if __name__ == '__main__':
     main()

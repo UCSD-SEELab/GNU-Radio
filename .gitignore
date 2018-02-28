@@ -6,3 +6,5 @@ io/*
 bitstream_pos
 gps_data
 rssi_data
+
+!io/config.cfg

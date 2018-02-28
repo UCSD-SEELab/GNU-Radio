@@ -542,7 +542,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>5000000</value>
+      <value>bandwidth</value>
     </param>
   </block>
   <block>
@@ -693,7 +693,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>5000000</value>
+      <value>1500000</value>
     </param>
   </block>
   <block>
