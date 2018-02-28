@@ -21,7 +21,7 @@ import time
 
 class ofdm_transmitter(gr.top_block):
 
-    def __init__(self, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_send.bin', tx_time=5):
+    def __init__(self, center_freq=440000000, filename='/home/pi/gr-bladerf-utils/io/_send.bin', tx_time=5):
         gr.top_block.__init__(self, "Ofdm Transmitter")
 
         ##################################################
@@ -249,7 +249,7 @@ def argument_parser():
         "", "--center-freq", dest="center_freq", type="intx", default=440000000,
         help="Set center_freq [default=%default]")
     parser.add_option(
-        "", "--filename", dest="filename", type="string", default='C:/Projects/gr-bladerf-utils/io/_send.bin',
+        "", "--filename", dest="filename", type="string", default='/home/pi/gr-bladerf-utils/io/_send.bin',
         help="Set filename [default=%default]")
     parser.add_option(
         "", "--tx-time", dest="tx_time", type="intx", default=5,

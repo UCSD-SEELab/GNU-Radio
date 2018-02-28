@@ -23,7 +23,7 @@ import time
 
 class ofdm_receiver(gr.top_block):
 
-    def __init__(self, center_freq=440000000, filename='C:/Projects/gr-bladerf-utils/io/_out', rx_time=5):
+    def __init__(self, center_freq=440000000, filename='/home/pi/gr-bladerf-utils/io/_out', rx_time=5):
         gr.top_block.__init__(self, "Ofdm Receiver")
 
         ##################################################
@@ -316,7 +316,7 @@ def argument_parser():
         "-f", "--center-freq", dest="center_freq", type="intx", default=440000000,
         help="Set center_freq [default=%default]")
     parser.add_option(
-        "", "--filename", dest="filename", type="string", default='C:/Projects/gr-bladerf-utils/io/_out',
+        "", "--filename", dest="filename", type="string", default='/home/pi/gr-bladerf-utils/io/_out',
         help="Set filename [default=%default]")
     parser.add_option(
         "", "--rx-time", dest="rx_time", type="intx", default=5,

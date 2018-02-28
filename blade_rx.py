@@ -217,12 +217,13 @@ class blade_rf_sdr():
     def run(self, sdr):
         # sdr.open_blade('1')
         # sdr.set_sample_rate(6)
-        self.set_amplifier_gain(['lnagain', 'rxvga1', 'rxvga2'], [0, 5, 0])
+        self.set_amplifier_gain(['lnagain', 'rxvga1', 'rxvga2'], [6, 30, 30])
+        self.send_exec('cal lms')
         filename = 'trial.csv'
         self.rx_samples('100K', 'csv', filename)
 
 if __name__ == '__main__':
     sdr = blade_rf_sdr(1)
     #sdr.set_bandwidth('all', 28)
-    sdr.set_center_freq('all', 2437)
+    #sdr.set_center_freq('all', 2437)
     sdr.run(sdr)
