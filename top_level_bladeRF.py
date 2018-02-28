@@ -384,7 +384,7 @@ def main():
       
       if cfg.tx:
         message = "[main] hi!"
-        print '[main] Tx message:' + message + ' | Repeat:' + str(cfg.udp_repeat)
+        #print '[main] Tx message:' + message + ' | Repeat:' + str(cfg.udp_repeat)
         #for i in range(udp_repeat):
         #  sock.sendto(message, (udp_tx_ip, udp_tx_port))
       

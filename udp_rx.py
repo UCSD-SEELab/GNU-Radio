@@ -12,6 +12,7 @@ import time
 UDP_IP = "127.0.0.1"
 UDP_PORT = 9002
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.settimeout(5)
 
 sock.bind((UDP_IP, UDP_PORT))
 
@@ -41,6 +42,7 @@ try:
       time_passed += 1
     except Exception as e:
       print '[ERROR]', e
+
 except KeyboardInterrupt:
   print '\n Ctrl+c received.'
   print 'TOTAL BYTES:', totalbytes
@@ -51,3 +53,5 @@ except KeyboardInterrupt:
 
   print 'MIN RATE:', minrate
   print 'MAX RATE:', maxrate
+except Exception as e:
+  print '[ERROR]', e

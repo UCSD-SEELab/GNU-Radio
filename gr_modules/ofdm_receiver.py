@@ -352,7 +352,16 @@ def main(top_block_cls=ofdm_receiver, options=None):
         options, _ = argument_parser().parse_args()
 
     tb = top_block_cls(bandwidth=options.bandwidth, center_freq=options.center_freq, filename=options.filename, rx_time=options.rx_time, udp_rx_ip=options.udp_rx_ip, udp_rx_port=options.udp_rx_port)
+    print '[odfm rx] Freq: ' + str(options.center_freq)
+
     tb.start()
+    start_time = time.time()
+    #count = 0
+
+    while (time.time() - start_time < options.rx_time):
+        time.sleep(0.1)
+
+    tb.stop()
     tb.wait()
 
 
