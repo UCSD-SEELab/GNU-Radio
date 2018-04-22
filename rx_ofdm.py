@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Rx Ofdm
-# Generated: Fri Apr 20 19:31:58 2018
+# Generated: Sat Apr 21 21:45:02 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -33,7 +33,7 @@ import sys
 
 class rx_ofdm(gr.top_block, Qt.QWidget):
 
-    def __init__(self, udp_rx_ip="127.0.0.1", udp_rx_port=9002):
+    def __init__(self, udp_rx_ip='127.0.0.1', udp_rx_port=9002):
         gr.top_block.__init__(self, "Rx Ofdm")
         Qt.QWidget.__init__(self)
         self.setWindowTitle("Rx Ofdm")
@@ -109,15 +109,17 @@ class rx_ofdm(gr.top_block, Qt.QWidget):
         	firdes.WIN_BLACKMAN_hARRIS, #wintype
         	0, #fc
         	samp_rate, #bw
-        	"Rx Spectrum", #name
+        	'Rx Spectrum', #name
         	1 #number of inputs
         )
         self.qtgui_freq_sink_x_0_0.set_update_time(0.01)
         self.qtgui_freq_sink_x_0_0.set_y_axis(-140, 10)
+        self.qtgui_freq_sink_x_0_0.set_y_label('Relative Gain', 'dB')
         self.qtgui_freq_sink_x_0_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
         self.qtgui_freq_sink_x_0_0.enable_autoscale(False)
         self.qtgui_freq_sink_x_0_0.enable_grid(False)
         self.qtgui_freq_sink_x_0_0.set_fft_average(1.0)
+        self.qtgui_freq_sink_x_0_0.enable_axis_labels(True)
         self.qtgui_freq_sink_x_0_0.enable_control_panel(False)
         
         if not True:
@@ -126,8 +128,8 @@ class rx_ofdm(gr.top_block, Qt.QWidget):
         if "complex" == "float" or "complex" == "msg_float":
           self.qtgui_freq_sink_x_0_0.set_plot_pos_half(not True)
         
-        labels = ["Rx Spectrum", "", "", "", "",
-                  "", "", "", "", ""]
+        labels = ['Rx Spectrum', '', '', '', '',
+                  '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
         colors = ["blue", "red", "green", "black", "cyan",
@@ -145,7 +147,7 @@ class rx_ofdm(gr.top_block, Qt.QWidget):
         
         self._qtgui_freq_sink_x_0_0_win = sip.wrapinstance(self.qtgui_freq_sink_x_0_0.pyqwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_freq_sink_x_0_0_win)
-        self.pluto_source_0 = iio.pluto_source("ip:pluto.local", freq, samp_rate, bw, 0x8000, True, True, True, "manual", rf_gain, "", True)
+        self.pluto_source_0 = iio.pluto_source('ip:pluto.local', freq, samp_rate, bw, 0x8000, True, True, True, "manual", rf_gain, '', True)
         self._if_gain_range = Range(0, 30, 1, 0, 200)
         self._if_gain_win = RangeWidget(self._if_gain_range, self.set_if_gain, "if_gain", "counter_slider", float)
         self.top_layout.addWidget(self._if_gain_win)
@@ -167,7 +169,7 @@ class rx_ofdm(gr.top_block, Qt.QWidget):
         	  scramble_bits=False
         	 )
         self.blocks_udp_sink_0 = blocks.udp_sink(gr.sizeof_char*1, udp_rx_ip, udp_rx_port, 1472, True)
-        self.blocks_tag_debug_0 = blocks.tag_debug(gr.sizeof_char*1, "Rx Packets", ""); self.blocks_tag_debug_0.set_display(True)
+        self.blocks_tag_debug_0 = blocks.tag_debug(gr.sizeof_char*1, 'Rx Packets', ""); self.blocks_tag_debug_0.set_display(True)
         self._bb_gain_range = Range(0, 30, 1, 0, 200)
         self._bb_gain_win = RangeWidget(self._bb_gain_range, self.set_bb_gain, "bb_gain", "counter_slider", float)
         self.top_layout.addWidget(self._bb_gain_win)
@@ -188,7 +190,6 @@ class rx_ofdm(gr.top_block, Qt.QWidget):
         self.settings.setValue("geometry", self.saveGeometry())
         event.accept()
 
-
     def get_udp_rx_ip(self):
         return self.udp_rx_ip
 
@@ -206,63 +207,59 @@ class rx_ofdm(gr.top_block, Qt.QWidget):
 
     def set_pilot_symbols(self, pilot_symbols):
         self.pilot_symbols = pilot_symbols
-        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
-        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
 
     def get_pilot_carriers(self):
         return self.pilot_carriers
 
     def set_pilot_carriers(self, pilot_carriers):
         self.pilot_carriers = pilot_carriers
-        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
-        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
 
     def get_payload_mod(self):
         return self.payload_mod
 
     def set_payload_mod(self, payload_mod):
         self.payload_mod = payload_mod
-        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=self.header_mod.bits_per_symbol(), bits_per_payload_sym=self.payload_mod.bits_per_symbol(), scramble_header=False))
-        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
 
     def get_packet_length_tag_key(self):
         return self.packet_length_tag_key
 
     def set_packet_length_tag_key(self, packet_length_tag_key):
         self.packet_length_tag_key = packet_length_tag_key
-        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=self.header_mod.bits_per_symbol(), bits_per_payload_sym=self.payload_mod.bits_per_symbol(), scramble_header=False))
+        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=header_mod.bits_per_symbol(), bits_per_payload_sym=payload_mod.bits_per_symbol(), scramble_header=False))
 
     def get_occupied_carriers(self):
         return self.occupied_carriers
 
     def set_occupied_carriers(self, occupied_carriers):
         self.occupied_carriers = occupied_carriers
-        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
-        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=self.header_mod.bits_per_symbol(), bits_per_payload_sym=self.payload_mod.bits_per_symbol(), scramble_header=False))
-        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=header_mod.bits_per_symbol(), bits_per_payload_sym=payload_mod.bits_per_symbol(), scramble_header=False))
+        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
 
     def get_length_tag_key(self):
         return self.length_tag_key
 
     def set_length_tag_key(self, length_tag_key):
         self.length_tag_key = length_tag_key
-        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=self.header_mod.bits_per_symbol(), bits_per_payload_sym=self.payload_mod.bits_per_symbol(), scramble_header=False))
+        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=header_mod.bits_per_symbol(), bits_per_payload_sym=payload_mod.bits_per_symbol(), scramble_header=False))
 
     def get_header_mod(self):
         return self.header_mod
 
     def set_header_mod(self, header_mod):
         self.header_mod = header_mod
-        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
-        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=self.header_mod.bits_per_symbol(), bits_per_payload_sym=self.payload_mod.bits_per_symbol(), scramble_header=False))
 
     def get_fft_len(self):
         return self.fft_len
 
     def set_fft_len(self, fft_len):
         self.fft_len = fft_len
-        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
-        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
 
     def get_sync_word2(self):
         return self.sync_word2
@@ -281,9 +278,8 @@ class rx_ofdm(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.blocks_throttle_0.set_sample_rate(self.samp_rate)
-        self.pluto_source_0.set_params(self.freq, self.samp_rate, self.bw, True, True, True, "manual", self.rf_gain, "", True)
         self.qtgui_freq_sink_x_0_0.set_frequency_range(0, self.samp_rate)
+        self.pluto_source_0.set_params(self.freq, self.samp_rate, self.bw, True, True, True, "manual", self.rf_gain, '', True)
 
     def get_rolloff(self):
         return self.rolloff
@@ -296,7 +292,7 @@ class rx_ofdm(gr.top_block, Qt.QWidget):
 
     def set_rf_gain(self, rf_gain):
         self.rf_gain = rf_gain
-        self.pluto_source_0.set_params(self.freq, self.samp_rate, self.bw, True, True, True, "manual", self.rf_gain, "", True)
+        self.pluto_source_0.set_params(self.freq, self.samp_rate, self.bw, True, True, True, "manual", self.rf_gain, '', True)
 
     def get_payload_equalizer(self):
         return self.payload_equalizer
@@ -339,14 +335,14 @@ class rx_ofdm(gr.top_block, Qt.QWidget):
 
     def set_freq(self, freq):
         self.freq = freq
-        self.pluto_source_0.set_params(self.freq, self.samp_rate, self.bw, True, True, True, "manual", self.rf_gain, "", True)
+        self.pluto_source_0.set_params(self.freq, self.samp_rate, self.bw, True, True, True, "manual", self.rf_gain, '', True)
 
     def get_bw(self):
         return self.bw
 
     def set_bw(self, bw):
         self.bw = bw
-        self.pluto_source_0.set_params(self.freq, self.samp_rate, self.bw, True, True, True, "manual", self.rf_gain, "", True)
+        self.pluto_source_0.set_params(self.freq, self.samp_rate, self.bw, True, True, True, "manual", self.rf_gain, '', True)
 
     def get_bb_gain(self):
         return self.bb_gain
@@ -362,9 +358,9 @@ class rx_ofdm(gr.top_block, Qt.QWidget):
 
 
 def argument_parser():
-    parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
+    parser = OptionParser(usage="%prog: [options]", option_class=eng_option)
     parser.add_option(
-        "", "--udp-rx-ip", dest="udp_rx_ip", type="string", default="127.0.0.1",
+        "", "--udp-rx-ip", dest="udp_rx_ip", type="string", default='127.0.0.1',
         help="Set udp_rx_ip [default=%default]")
     parser.add_option(
         "", "--udp-rx-port", dest="udp_rx_port", type="intx", default=9002,

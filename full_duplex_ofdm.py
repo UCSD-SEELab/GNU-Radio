@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Full Duplex Ofdm
-# Generated: Fri Apr 20 18:30:07 2018
+# Generated: Sat Apr 21 18:25:35 2018
 ##################################################
 
 if __name__ == '__main__':
@@ -35,7 +35,7 @@ import time
 
 class full_duplex_ofdm(gr.top_block, Qt.QWidget):
 
-    def __init__(self, udp_tx_ip="127.0.0.1", udp_tx_port=9000):
+    def __init__(self, udp_tx_ip='127.0.0.1', udp_tx_port=9000):
         gr.top_block.__init__(self, "Full Duplex Ofdm")
         Qt.QWidget.__init__(self)
         self.setWindowTitle("Full Duplex Ofdm")
@@ -100,12 +100,12 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
         self.tab_layout_0 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.tab_widget_0)
         self.tab_grid_layout_0 = Qt.QGridLayout()
         self.tab_layout_0.addLayout(self.tab_grid_layout_0)
-        self.tab.addTab(self.tab_widget_0, "General")
+        self.tab.addTab(self.tab_widget_0, 'General')
         self.tab_widget_1 = Qt.QWidget()
         self.tab_layout_1 = Qt.QBoxLayout(Qt.QBoxLayout.TopToBottom, self.tab_widget_1)
         self.tab_grid_layout_1 = Qt.QGridLayout()
         self.tab_layout_1.addLayout(self.tab_grid_layout_1)
-        self.tab.addTab(self.tab_widget_1, "Gains")
+        self.tab.addTab(self.tab_widget_1, 'Gains')
         self.top_layout.addWidget(self.tab)
         self._samp_rate_range = Range(100000, 5000000, 100000, 1500000, 200)
         self._samp_rate_win = RangeWidget(self._samp_rate_range, self.set_samp_rate, "samp_rate", "counter_slider", int)
@@ -137,25 +137,26 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0_0_0 = qtgui.time_sink_f(
         	1024, #size
         	samp_rate, #samp_rate
-        	"RX2", #name
+        	'RX2', #name
         	1 #number of inputs
         )
         self.qtgui_time_sink_x_0_0_0.set_update_time(0.5)
         self.qtgui_time_sink_x_0_0_0.set_y_axis(-1, 1)
         
-        self.qtgui_time_sink_x_0_0_0.set_y_label("Amplitude", "")
+        self.qtgui_time_sink_x_0_0_0.set_y_label('Amplitude', "")
         
         self.qtgui_time_sink_x_0_0_0.enable_tags(-1, True)
         self.qtgui_time_sink_x_0_0_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
         self.qtgui_time_sink_x_0_0_0.enable_autoscale(True)
         self.qtgui_time_sink_x_0_0_0.enable_grid(False)
+        self.qtgui_time_sink_x_0_0_0.enable_axis_labels(True)
         self.qtgui_time_sink_x_0_0_0.enable_control_panel(False)
         
         if not True:
           self.qtgui_time_sink_x_0_0_0.disable_legend()
         
-        labels = ["", "", "", "", "",
-                  "", "", "", "", ""]
+        labels = ['', '', '', '', '',
+                  '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
         colors = ["blue", "red", "green", "black", "cyan",
@@ -183,25 +184,26 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0_0 = qtgui.time_sink_f(
         	1024, #size
         	samp_rate, #samp_rate
-        	"RX1", #name
+        	'RX1', #name
         	1 #number of inputs
         )
         self.qtgui_time_sink_x_0_0.set_update_time(0.5)
         self.qtgui_time_sink_x_0_0.set_y_axis(-1, 1)
         
-        self.qtgui_time_sink_x_0_0.set_y_label("Amplitude", "")
+        self.qtgui_time_sink_x_0_0.set_y_label('Amplitude', "")
         
         self.qtgui_time_sink_x_0_0.enable_tags(-1, True)
         self.qtgui_time_sink_x_0_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
         self.qtgui_time_sink_x_0_0.enable_autoscale(True)
         self.qtgui_time_sink_x_0_0.enable_grid(False)
+        self.qtgui_time_sink_x_0_0.enable_axis_labels(True)
         self.qtgui_time_sink_x_0_0.enable_control_panel(False)
         
         if not True:
           self.qtgui_time_sink_x_0_0.disable_legend()
         
-        labels = ["", "", "", "", "",
-                  "", "", "", "", ""]
+        labels = ['', '', '', '', '',
+                  '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
         colors = ["blue", "red", "green", "black", "cyan",
@@ -235,19 +237,20 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0.set_update_time(0.10)
         self.qtgui_time_sink_x_0.set_y_axis(-1, 1)
         
-        self.qtgui_time_sink_x_0.set_y_label("Amplitude", "")
+        self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
         
         self.qtgui_time_sink_x_0.enable_tags(-1, True)
         self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
         self.qtgui_time_sink_x_0.enable_autoscale(False)
         self.qtgui_time_sink_x_0.enable_grid(False)
+        self.qtgui_time_sink_x_0.enable_axis_labels(True)
         self.qtgui_time_sink_x_0.enable_control_panel(False)
         
         if not True:
           self.qtgui_time_sink_x_0.disable_legend()
         
-        labels = ["", "", "", "", "",
-                  "", "", "", "", ""]
+        labels = ['', '', '', '', '',
+                  '', '', '', '', '']
         widths = [1, 1, 1, 1, 1,
                   1, 1, 1, 1, 1]
         colors = ["blue", "red", "green", "black", "cyan",
@@ -275,9 +278,9 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
         
         self._qtgui_time_sink_x_0_win = sip.wrapinstance(self.qtgui_time_sink_x_0.pyqwidget(), Qt.QWidget)
         self.top_layout.addWidget(self._qtgui_time_sink_x_0_win)
-        self.pluto_source_0_0 = iio.pluto_source("ip:pluto.local", freq_2 + freq_offset, samp_rate, bw, 0x8000, True, True, True, "manual", 32, "", True)
-        self.pluto_sink_0_0_0 = iio.pluto_sink("ip:pluto.local", freq_1, samp_rate, bw, 0x8000, False, atten, "", True)
-        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + "" )
+        self.pluto_source_0_0 = iio.pluto_source('ip:pluto.local', freq_2 + freq_offset, samp_rate, bw, 0x8000, True, True, True, "manual", 32, '', True)
+        self.pluto_sink_0_0_0 = iio.pluto_sink('ip:pluto.local', freq_1, samp_rate, bw, 0x8000, False, atten, '', True)
+        self.osmosdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + '' )
         self.osmosdr_source_0.set_sample_rate(samp_rate)
         self.osmosdr_source_0.set_center_freq(freq_1 + freq_offset, 0)
         self.osmosdr_source_0.set_freq_corr(0, 0)
@@ -287,17 +290,17 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
         self.osmosdr_source_0.set_gain(rf_gain, 0)
         self.osmosdr_source_0.set_if_gain(if_gain, 0)
         self.osmosdr_source_0.set_bb_gain(bb_gain, 0)
-        self.osmosdr_source_0.set_antenna("", 0)
+        self.osmosdr_source_0.set_antenna('', 0)
         self.osmosdr_source_0.set_bandwidth(bw, 0)
           
-        self.osmosdr_sink_0_0_0 = osmosdr.sink( args="numchan=" + str(1) + " " + "" )
+        self.osmosdr_sink_0_0_0 = osmosdr.sink( args="numchan=" + str(1) + " " + '' )
         self.osmosdr_sink_0_0_0.set_sample_rate(samp_rate)
         self.osmosdr_sink_0_0_0.set_center_freq(freq_2, 0)
         self.osmosdr_sink_0_0_0.set_freq_corr(0, 0)
         self.osmosdr_sink_0_0_0.set_gain(rf_gain, 0)
         self.osmosdr_sink_0_0_0.set_if_gain(if_gain, 0)
         self.osmosdr_sink_0_0_0.set_bb_gain(bb_gain, 0)
-        self.osmosdr_sink_0_0_0.set_antenna("", 0)
+        self.osmosdr_sink_0_0_0.set_antenna('', 0)
         self.osmosdr_sink_0_0_0.set_bandwidth(bw, 0)
           
         self.digital_ofdm_tx_0_0 = digital.ofdm_tx(
@@ -389,7 +392,6 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
         self.settings.setValue("geometry", self.saveGeometry())
         event.accept()
 
-
     def get_udp_tx_ip(self):
         return self.udp_tx_ip
 
@@ -407,63 +409,59 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
 
     def set_pilot_symbols(self, pilot_symbols):
         self.pilot_symbols = pilot_symbols
-        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
-        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
 
     def get_pilot_carriers(self):
         return self.pilot_carriers
 
     def set_pilot_carriers(self, pilot_carriers):
         self.pilot_carriers = pilot_carriers
-        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
-        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
 
     def get_payload_mod(self):
         return self.payload_mod
 
     def set_payload_mod(self, payload_mod):
         self.payload_mod = payload_mod
-        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=self.header_mod.bits_per_symbol(), bits_per_payload_sym=self.payload_mod.bits_per_symbol(), scramble_header=False))
-        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
 
     def get_packet_length_tag_key(self):
         return self.packet_length_tag_key
 
     def set_packet_length_tag_key(self, packet_length_tag_key):
         self.packet_length_tag_key = packet_length_tag_key
-        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=self.header_mod.bits_per_symbol(), bits_per_payload_sym=self.payload_mod.bits_per_symbol(), scramble_header=False))
+        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=header_mod.bits_per_symbol(), bits_per_payload_sym=payload_mod.bits_per_symbol(), scramble_header=False))
 
     def get_occupied_carriers(self):
         return self.occupied_carriers
 
     def set_occupied_carriers(self, occupied_carriers):
         self.occupied_carriers = occupied_carriers
-        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
-        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=self.header_mod.bits_per_symbol(), bits_per_payload_sym=self.payload_mod.bits_per_symbol(), scramble_header=False))
-        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=header_mod.bits_per_symbol(), bits_per_payload_sym=payload_mod.bits_per_symbol(), scramble_header=False))
+        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
 
     def get_length_tag_key(self):
         return self.length_tag_key
 
     def set_length_tag_key(self, length_tag_key):
         self.length_tag_key = length_tag_key
-        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=self.header_mod.bits_per_symbol(), bits_per_payload_sym=self.payload_mod.bits_per_symbol(), scramble_header=False))
+        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=header_mod.bits_per_symbol(), bits_per_payload_sym=payload_mod.bits_per_symbol(), scramble_header=False))
 
     def get_header_mod(self):
         return self.header_mod
 
     def set_header_mod(self, header_mod):
         self.header_mod = header_mod
-        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
-        self.set_header_formatter(digital.packet_header_ofdm(self.occupied_carriers, n_syms=1, len_tag_key=self.packet_length_tag_key, frame_len_tag_key=self.length_tag_key, bits_per_header_sym=self.header_mod.bits_per_symbol(), bits_per_payload_sym=self.payload_mod.bits_per_symbol(), scramble_header=False))
 
     def get_fft_len(self):
         return self.fft_len
 
     def set_fft_len(self, fft_len):
         self.fft_len = fft_len
-        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
-        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, self.payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_payload_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, payload_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols, 1))
+        self.set_header_equalizer(digital.ofdm_equalizer_simpledfe(self.fft_len, header_mod.base(), self.occupied_carriers, self.pilot_carriers, self.pilot_symbols))
 
     def get_sync_word2(self):
         return self.sync_word2
@@ -482,11 +480,11 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.pluto_sink_0_0_0.set_params(self.freq_1, self.samp_rate, self.bw, self.atten, "", True)
-        self.pluto_source_0_0.set_params(self.freq_2 + self.freq_offset, self.samp_rate, self.bw, True, True, True, "manual", 32, "", True)
-        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
-        self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
         self.qtgui_time_sink_x_0_0_0.set_samp_rate(self.samp_rate)
+        self.qtgui_time_sink_x_0_0.set_samp_rate(self.samp_rate)
+        self.qtgui_time_sink_x_0.set_samp_rate(self.samp_rate)
+        self.pluto_source_0_0.set_params(self.freq_2 + self.freq_offset, self.samp_rate, self.bw, True, True, True, "manual", 32, '', True)
+        self.pluto_sink_0_0_0.set_params(self.freq_1, self.samp_rate, self.bw, self.atten, '', True)
         self.osmosdr_source_0.set_sample_rate(self.samp_rate)
         self.osmosdr_sink_0_0_0.set_sample_rate(self.samp_rate)
 
@@ -515,10 +513,10 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
 
     def set_packet_len(self, packet_len):
         self.packet_len = packet_len
-        self.blocks_stream_to_tagged_stream_0.set_packet_len(self.packet_len)
-        self.blocks_stream_to_tagged_stream_0.set_packet_len_pmt(self.packet_len)
         self.blocks_stream_to_tagged_stream_0_0.set_packet_len(self.packet_len)
         self.blocks_stream_to_tagged_stream_0_0.set_packet_len_pmt(self.packet_len)
+        self.blocks_stream_to_tagged_stream_0.set_packet_len(self.packet_len)
+        self.blocks_stream_to_tagged_stream_0.set_packet_len_pmt(self.packet_len)
 
     def get_if_gain(self):
         return self.if_gain
@@ -545,7 +543,7 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
 
     def set_freq_offset(self, freq_offset):
         self.freq_offset = freq_offset
-        self.pluto_source_0_0.set_params(self.freq_2 + self.freq_offset, self.samp_rate, self.bw, True, True, True, "manual", 32, "", True)
+        self.pluto_source_0_0.set_params(self.freq_2 + self.freq_offset, self.samp_rate, self.bw, True, True, True, "manual", 32, '', True)
         self.osmosdr_source_0.set_center_freq(self.freq_1 + self.freq_offset, 0)
 
     def get_freq_2(self):
@@ -553,7 +551,7 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
 
     def set_freq_2(self, freq_2):
         self.freq_2 = freq_2
-        self.pluto_source_0_0.set_params(self.freq_2 + self.freq_offset, self.samp_rate, self.bw, True, True, True, "manual", 32, "", True)
+        self.pluto_source_0_0.set_params(self.freq_2 + self.freq_offset, self.samp_rate, self.bw, True, True, True, "manual", 32, '', True)
         self.osmosdr_sink_0_0_0.set_center_freq(self.freq_2, 0)
 
     def get_freq_1(self):
@@ -561,7 +559,7 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
 
     def set_freq_1(self, freq_1):
         self.freq_1 = freq_1
-        self.pluto_sink_0_0_0.set_params(self.freq_1, self.samp_rate, self.bw, self.atten, "", True)
+        self.pluto_sink_0_0_0.set_params(self.freq_1, self.samp_rate, self.bw, self.atten, '', True)
         self.osmosdr_source_0.set_center_freq(self.freq_1 + self.freq_offset, 0)
 
     def get_bw(self):
@@ -569,8 +567,8 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
 
     def set_bw(self, bw):
         self.bw = bw
-        self.pluto_sink_0_0_0.set_params(self.freq_1, self.samp_rate, self.bw, self.atten, "", True)
-        self.pluto_source_0_0.set_params(self.freq_2 + self.freq_offset, self.samp_rate, self.bw, True, True, True, "manual", 32, "", True)
+        self.pluto_source_0_0.set_params(self.freq_2 + self.freq_offset, self.samp_rate, self.bw, True, True, True, "manual", 32, '', True)
+        self.pluto_sink_0_0_0.set_params(self.freq_1, self.samp_rate, self.bw, self.atten, '', True)
         self.osmosdr_source_0.set_bandwidth(self.bw, 0)
         self.osmosdr_sink_0_0_0.set_bandwidth(self.bw, 0)
 
@@ -587,13 +585,13 @@ class full_duplex_ofdm(gr.top_block, Qt.QWidget):
 
     def set_atten(self, atten):
         self.atten = atten
-        self.pluto_sink_0_0_0.set_params(self.freq_1, self.samp_rate, self.bw, self.atten, "", True)
+        self.pluto_sink_0_0_0.set_params(self.freq_1, self.samp_rate, self.bw, self.atten, '', True)
 
 
 def argument_parser():
-    parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
+    parser = OptionParser(usage="%prog: [options]", option_class=eng_option)
     parser.add_option(
-        "", "--udp-tx-ip", dest="udp_tx_ip", type="string", default="127.0.0.1",
+        "", "--udp-tx-ip", dest="udp_tx_ip", type="string", default='127.0.0.1',
         help="Set udp_tx_ip [default=%default]")
     parser.add_option(
         "", "--udp-tx-port", dest="udp_tx_port", type="intx", default=9000,

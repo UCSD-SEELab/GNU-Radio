@@ -110,7 +110,8 @@ class my_top_block(gr.top_block):
         """
         Return True if the receive path thinks there's carrier
         """
-        return self.rxpath.carrier_sensed()
+        #return self.rxpath.carrier_sensed()
+        return False
 
     def set_freq(self, target_freq):
         """
@@ -166,7 +167,7 @@ class cs_mac(object):
 
         FIXME: may want to check for EINTR and EAGAIN and reissue read
         """
-        min_delay = 0.01               # seconds
+        min_delay = 0.050               # seconds
 
         while 1:
             payload = os.read(self.tun_fd, 10*1024)
