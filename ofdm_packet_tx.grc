@@ -345,11 +345,11 @@
     </param>
     <param>
       <key>step</key>
-      <value>1000000</value>
+      <value>10000000</value>
     </param>
     <param>
       <key>stop</key>
-      <value>900000000</value>
+      <value>3800000000</value>
     </param>
     <param>
       <key>rangeType</key>
@@ -986,7 +986,7 @@
     </param>
     <param>
       <key>const</key>
-      <value>0.025</value>
+      <value>0.02</value>
     </param>
     <param>
       <key>affinity</key>
