@@ -82,6 +82,33 @@
     </param>
   </block>
   <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(648, 20)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>MTU</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>10000</value>
+    </param>
+  </block>
+  <block>
     <key>variable_qtgui_range</key>
     <param>
       <key>comment</key>
@@ -181,6 +208,363 @@
     <param>
       <key>type</key>
       <value>int</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_cc_decoder_def</key>
+    <param>
+      <key>padding</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>k</key>
+      <value>k</value>
+    </param>
+    <param>
+      <key>dim1</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>dim2</key>
+      <value>4</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>state_end</key>
+      <value>-1</value>
+    </param>
+    <param>
+      <key>framebits</key>
+      <value>MTU*8</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(512, 1132)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>dec_cc</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>"ok"</value>
+    </param>
+    <param>
+      <key>ndim</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>polys</key>
+      <value>polys</value>
+    </param>
+    <param>
+      <key>rate</key>
+      <value>rate</value>
+    </param>
+    <param>
+      <key>state_start</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>mode</key>
+      <value>fec.CC_TERMINATED</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_dummy_decoder_def</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>dim1</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>dim2</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>framebits</key>
+      <value>MTU*8</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(712, 1076)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>dec_dummy</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>"ok"</value>
+    </param>
+    <param>
+      <key>ndim</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_repetition_decoder_def</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>dim1</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>dim2</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>framebits</key>
+      <value>MTU*8</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(896, 1088)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>dec_rep</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>"ok"</value>
+    </param>
+    <param>
+      <key>ndim</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>rep</key>
+      <value>rep</value>
+    </param>
+    <param>
+      <key>prob</key>
+      <value>0.5</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_cc_encoder_def</key>
+    <param>
+      <key>padding</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>k</key>
+      <value>k</value>
+    </param>
+    <param>
+      <key>dim1</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>dim2</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>framebits</key>
+      <value>MTU*8</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(512, 956)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>enc_cc</value>
+    </param>
+    <param>
+      <key>ndim</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>polys</key>
+      <value>polys</value>
+    </param>
+    <param>
+      <key>rate</key>
+      <value>rate</value>
+    </param>
+    <param>
+      <key>state_start</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>mode</key>
+      <value>fec.CC_TERMINATED</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_ccsds_encoder_def</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>dim1</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>dim2</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>framebits</key>
+      <value>MTU*8</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1104, 976)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>enc_ccsds</value>
+    </param>
+    <param>
+      <key>ndim</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>state_start</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>mode</key>
+      <value>fec.CC_TERMINATED</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_dummy_encoder_def</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>dim1</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>dim2</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>framebits</key>
+      <value>MTU*8</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(712, 980)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>enc_dummy</value>
+    </param>
+    <param>
+      <key>ndim</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>variable_repetition_encoder_def</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>dim1</key>
+      <value>4</value>
+    </param>
+    <param>
+      <key>dim2</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>framebits</key>
+      <value>MTU*8</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(896, 976)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>enc_rep</value>
+    </param>
+    <param>
+      <key>ndim</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>rep</key>
+      <value>rep</value>
     </param>
   </block>
   <block>
@@ -343,6 +727,114 @@
     <param>
       <key>widget</key>
       <value>counter_slider</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(376, 980)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>k</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>7</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(416, 1044)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>polys</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>[109, 79]</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(440, 980)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>rate</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>2</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(896, 916)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>rep</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>3</value>
     </param>
   </block>
   <block>
@@ -682,7 +1174,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(776, 8)</value>
+      <value>(1240, 16)</value>
     </param>
     <param>
       <key>gui_hint</key>
@@ -745,7 +1237,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -792,7 +1284,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -839,11 +1331,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(312, 128)</value>
+      <value>(312, 152)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -859,7 +1351,7 @@
     </param>
     <param>
       <key>mtu</key>
-      <value>10000</value>
+      <value>MTU</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -898,11 +1390,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(792, 128)</value>
+      <value>(792, 152)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -918,7 +1410,7 @@
     </param>
     <param>
       <key>mtu</key>
-      <value>10000</value>
+      <value>MTU</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -939,6 +1431,336 @@
     <param>
       <key>type</key>
       <value>"UDP_SERVER"</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_tuntap_pdu</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>istunflag</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(296, 76)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_tuntap_pdu_0</value>
+    </param>
+    <param>
+      <key>ifn</key>
+      <value>tun1</value>
+    </param>
+    <param>
+      <key>mtu</key>
+      <value>10000</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>blocks_tuntap_pdu</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>istunflag</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(776, 76)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>blocks_tuntap_pdu_1</value>
+    </param>
+    <param>
+      <key>ifn</key>
+      <value>tun2</value>
+    </param>
+    <param>
+      <key>mtu</key>
+      <value>10000</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+  </block>
+  <block>
+    <key>fec_async_decoder</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>decoder</key>
+      <value>dec_cc</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(488, 748)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>fec_async_decoder_0</value>
+    </param>
+    <param>
+      <key>mtu</key>
+      <value>MTU</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>packed</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>rev_pack</key>
+      <value>True</value>
+    </param>
+  </block>
+  <block>
+    <key>fec_async_decoder</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>decoder</key>
+      <value>dec_cc</value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1096, 564)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>fec_async_decoder_0_0</value>
+    </param>
+    <param>
+      <key>mtu</key>
+      <value>MTU</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>packed</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>rev_pack</key>
+      <value>True</value>
+    </param>
+  </block>
+  <block>
+    <key>fec_async_encoder</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>encoder</key>
+      <value>enc_cc</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(112, 524)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>fec_async_encoder_0</value>
+    </param>
+    <param>
+      <key>mtu</key>
+      <value>MTU</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>packed</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>rev_pack</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>rev_unpack</key>
+      <value>True</value>
+    </param>
+  </block>
+  <block>
+    <key>fec_async_encoder</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>2</value>
+    </param>
+    <param>
+      <key>encoder</key>
+      <value>enc_cc</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(744, 508)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>fec_async_encoder_0_0</value>
+    </param>
+    <param>
+      <key>mtu</key>
+      <value>MTU</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>packed</key>
+      <value>False</value>
+    </param>
+    <param>
+      <key>rev_pack</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>rev_unpack</key>
+      <value>True</value>
     </param>
   </block>
   <block>
@@ -973,7 +1795,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(560, 432)</value>
+      <value>(576, 456)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1361,7 +2183,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(288, 68)</value>
+      <value>(288, 12)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -2821,6 +3643,42 @@
     <sink_key>bcin</sink_key>
   </connection>
   <connection>
+    <source_block_id>blocks_tuntap_pdu_0</source_block_id>
+    <sink_block_id>ieee802_15_4_rime_stack_0</sink_block_id>
+    <source_key>pdus</source_key>
+    <sink_key>bcin</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>blocks_tuntap_pdu_1</source_block_id>
+    <sink_block_id>ieee802_15_4_rime_stack_0_0</sink_block_id>
+    <source_key>pdus</source_key>
+    <sink_key>bcin</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>fec_async_decoder_0</source_block_id>
+    <sink_block_id>ieee802_15_4_mac_0</sink_block_id>
+    <source_key>out</source_key>
+    <sink_key>pdu in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>fec_async_decoder_0_0</source_block_id>
+    <sink_block_id>ieee802_15_4_mac_0_0</sink_block_id>
+    <source_key>out</source_key>
+    <sink_key>pdu in</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>fec_async_encoder_0</source_block_id>
+    <sink_block_id>ieee802_15_4_oqpsk_phy_0</sink_block_id>
+    <source_key>out</source_key>
+    <sink_key>txin</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>fec_async_encoder_0_0</source_block_id>
+    <sink_block_id>ieee802_15_4_oqpsk_phy_0_0</sink_block_id>
+    <source_key>out</source_key>
+    <sink_key>txin</sink_key>
+  </connection>
+  <connection>
     <source_block_id>foo_packet_pad_0</source_block_id>
     <sink_block_id>ieee802_15_4_oqpsk_phy_0_0</sink_block_id>
     <source_key>0</source_key>
@@ -2846,9 +3704,9 @@
   </connection>
   <connection>
     <source_block_id>ieee802_15_4_mac_0</source_block_id>
-    <sink_block_id>ieee802_15_4_oqpsk_phy_0</sink_block_id>
+    <sink_block_id>fec_async_encoder_0</sink_block_id>
     <source_key>pdu out</source_key>
-    <sink_key>txin</sink_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>ieee802_15_4_mac_0_0</source_block_id>
@@ -2858,15 +3716,15 @@
   </connection>
   <connection>
     <source_block_id>ieee802_15_4_mac_0_0</source_block_id>
-    <sink_block_id>ieee802_15_4_oqpsk_phy_0_0</sink_block_id>
+    <sink_block_id>fec_async_encoder_0_0</sink_block_id>
     <source_key>pdu out</source_key>
-    <sink_key>txin</sink_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>ieee802_15_4_oqpsk_phy_0</source_block_id>
-    <sink_block_id>ieee802_15_4_mac_0</sink_block_id>
+    <sink_block_id>fec_async_decoder_0</sink_block_id>
     <source_key>rxout</source_key>
-    <sink_key>pdu in</sink_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>ieee802_15_4_oqpsk_phy_0</source_block_id>
@@ -2876,9 +3734,9 @@
   </connection>
   <connection>
     <source_block_id>ieee802_15_4_oqpsk_phy_0_0</source_block_id>
-    <sink_block_id>ieee802_15_4_mac_0_0</sink_block_id>
+    <sink_block_id>fec_async_decoder_0_0</sink_block_id>
     <source_key>rxout</source_key>
-    <sink_key>pdu in</sink_key>
+    <sink_key>in</sink_key>
   </connection>
   <connection>
     <source_block_id>ieee802_15_4_oqpsk_phy_0_0</source_block_id>
@@ -2894,6 +3752,12 @@
   </connection>
   <connection>
     <source_block_id>ieee802_15_4_rime_stack_0</source_block_id>
+    <sink_block_id>blocks_tuntap_pdu_0</sink_block_id>
+    <source_key>bcout</source_key>
+    <sink_key>pdus</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>ieee802_15_4_rime_stack_0</source_block_id>
     <sink_block_id>ieee802_15_4_mac_0</sink_block_id>
     <source_key>toMAC</source_key>
     <sink_key>app in</sink_key>
@@ -2901,6 +3765,12 @@
   <connection>
     <source_block_id>ieee802_15_4_rime_stack_0_0</source_block_id>
     <sink_block_id>blocks_socket_pdu_0_0_0</sink_block_id>
+    <source_key>bcout</source_key>
+    <sink_key>pdus</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>ieee802_15_4_rime_stack_0_0</source_block_id>
+    <sink_block_id>blocks_tuntap_pdu_1</sink_block_id>
     <source_key>bcout</source_key>
     <sink_key>pdus</sink_key>
   </connection>
