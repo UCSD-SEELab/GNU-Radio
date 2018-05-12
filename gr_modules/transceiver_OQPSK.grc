@@ -2307,7 +2307,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -3706,7 +3706,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -5150,19 +5150,19 @@
     </param>
     <param>
       <key>ant0</key>
-      <value></value>
+      <value>TX/RX</value>
     </param>
     <param>
       <key>bw0</key>
-      <value>0</value>
+      <value>bw</value>
     </param>
     <param>
       <key>center_freq0</key>
-      <value>freq</value>
+      <value>tx_freq</value>
     </param>
     <param>
       <key>norm_gain0</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>gain0</key>
@@ -5810,7 +5810,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -5934,7 +5934,7 @@
     </param>
     <param>
       <key>samp_rate</key>
-      <value>4000000</value>
+      <value>samp_rate</value>
     </param>
     <param>
       <key>hide_cmd_port</key>
@@ -5973,15 +5973,15 @@
     </param>
     <param>
       <key>ant0</key>
-      <value></value>
+      <value>RX2</value>
     </param>
     <param>
       <key>bw0</key>
-      <value>0</value>
+      <value>bw</value>
     </param>
     <param>
       <key>center_freq0</key>
-      <value>freq</value>
+      <value>rx_freq</value>
     </param>
     <param>
       <key>dc_offs_enb0</key>
@@ -5993,7 +5993,7 @@
     </param>
     <param>
       <key>norm_gain0</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>gain0</key>
@@ -7145,11 +7145,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(24, 392)</value>
+      <value>(16, 376)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -7277,7 +7277,7 @@
     </param>
     <param>
       <key>samp_rate</key>
-      <value>4000000</value>
+      <value>samp_rate</value>
     </param>
     <param>
       <key>hide_cmd_port</key>
