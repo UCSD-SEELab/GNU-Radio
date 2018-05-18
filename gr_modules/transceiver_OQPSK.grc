@@ -116,7 +116,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>20</value>
+      <value>10</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -317,7 +317,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>20</value>
+      <value>10</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -380,7 +380,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>20</value>
+      <value>10</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -443,7 +443,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>440000000</value>
+      <value>455000000</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -623,7 +623,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>455000000</value>
+      <value>440000000</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -662,7 +662,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>0</value>
+      <value>10</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -823,7 +823,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -1403,7 +1403,7 @@
     </param>
     <param>
       <key>bb_gain0</key>
-      <value>0</value>
+      <value>-4</value>
     </param>
     <param>
       <key>bw0</key>
@@ -3956,7 +3956,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>auto_filter</key>
@@ -4023,7 +4023,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>auto_filter</key>
@@ -5150,19 +5150,19 @@
     </param>
     <param>
       <key>ant0</key>
-      <value>TX/RX</value>
+      <value></value>
     </param>
     <param>
       <key>bw0</key>
-      <value>bw</value>
+      <value>0</value>
     </param>
     <param>
       <key>center_freq0</key>
-      <value>tx_freq</value>
+      <value>freq</value>
     </param>
     <param>
       <key>norm_gain0</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>gain0</key>
@@ -5810,7 +5810,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -5934,7 +5934,7 @@
     </param>
     <param>
       <key>samp_rate</key>
-      <value>samp_rate</value>
+      <value>4000000</value>
     </param>
     <param>
       <key>hide_cmd_port</key>
@@ -5973,15 +5973,15 @@
     </param>
     <param>
       <key>ant0</key>
-      <value>RX2</value>
+      <value></value>
     </param>
     <param>
       <key>bw0</key>
-      <value>bw</value>
+      <value>0</value>
     </param>
     <param>
       <key>center_freq0</key>
-      <value>rx_freq</value>
+      <value>freq</value>
     </param>
     <param>
       <key>dc_offs_enb0</key>
@@ -5993,7 +5993,7 @@
     </param>
     <param>
       <key>norm_gain0</key>
-      <value>False</value>
+      <value>True</value>
     </param>
     <param>
       <key>gain0</key>
@@ -7145,11 +7145,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(16, 376)</value>
+      <value>(24, 392)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -7277,7 +7277,7 @@
     </param>
     <param>
       <key>samp_rate</key>
-      <value>samp_rate</value>
+      <value>4000000</value>
     </param>
     <param>
       <key>hide_cmd_port</key>
