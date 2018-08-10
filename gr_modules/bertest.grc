@@ -191,7 +191,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>4000000</value>
+      <value>1000000</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -356,7 +356,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>440000000</value>
+      <value>800000000</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -434,7 +434,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>4000000</value>
+      <value>1000000</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -473,7 +473,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>800000000</value>
+      <value>440000000</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -626,7 +626,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>''</value>
+      <value>'addr=192.168.10.2'</value>
     </param>
   </block>
   <block>
@@ -3899,7 +3899,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>auto_filter</key>
@@ -3966,7 +3966,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>0</value>
     </param>
     <param>
       <key>auto_filter</key>
@@ -6856,7 +6856,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -8191,7 +8191,7 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>0</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>

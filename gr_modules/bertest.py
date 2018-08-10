@@ -25,10 +25,10 @@ INTERVAL = 1
 RX = 0
 TX = 1
 MANUAL = 2
-MODE = MANUAL
+MODE = TX
 
 #TODO figure out what to TX, do this in a way that is easy to change
-TX_PATTERN = b'\xff\x00\xff\x00'
+TX_PATTERN = b'\xff\x00\xff\x00' * 10
 
 '''[get_ip_address]------------------------------------------------------------
   Gets IP address of interface
@@ -57,7 +57,7 @@ def main():
   if MODE == RX:
     try:
       while True:
-        data, addr = sdr_s.recvfrom(120)
+        data, addr = sdr_s.recvfrom(20)
         
         if first_packet:
           test_start = time.time()
@@ -103,7 +103,7 @@ def main():
     try:
       while True:
 
-       data, addr = sdr_s.recvfrom(120)
+       data, addr = sdr_s.recvfrom(20)
         
        if first_packet:
          test_start = time.time()
